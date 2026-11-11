@@ -53,18 +53,6 @@ else
         usermod -aG docker ubuntu
     "
 
-    echo "[*] Copying project files to VM"
-    incus exec smartcity-services -- mkdir -p /home/ubuntu/smartcity
-    incus file push --recursive "$PROJECT_DIR/" smartcity-services/home/ubuntu/smartcity/
-    incus exec smartcity-services -- chown -R ubuntu:ubuntu /home/ubuntu/smartcity
-
-    echo "[*] Copying .env"
-    if [ -f "$PROJECT_DIR/.env" ]; then
-        incus file push "$PROJECT_DIR/.env" smartcity-services/home/ubuntu/smartcity/.env
-    else
-        incus file push "$PROJECT_DIR/.env.example" smartcity-services/home/ubuntu/smartcity/.env
-        echo "[!] .env not found — copied .env.example. Update WAZUH_HOST before run_all.sh"
-    fi
 fi
 
 # ── wazuh container ─────────────────────────────────────────────────────────
@@ -109,6 +97,18 @@ else
         wazuh/var/ossec/active-response/bin/block-threat.sh
     incus exec wazuh -- chmod +x /var/ossec/active-response/bin/block-threat.sh
     incus exec wazuh -- systemctl restart wazuh-manager
+    echo "[*] Copying project files into container"
+    incus exec smartcity-services -- mkdir -p /home/ubuntu/smartcity
+    incus file push --recursive "$PROJECT_DIR/" smartcity-services/home/ubuntu/smartcity/
+    incus exec smartcity-services -- chown -R ubuntu:ubuntu /home/ubuntu/smartcity
+
+    echo "[*] Copying .env"
+    if [ -f "$PROJECT_DIR/.env" ]; then
+        incus file push "$PROJECT_DIR/.env" smartcity-services/home/ubuntu/smartcity/.env
+    else
+        incus file push "$PROJECT_DIR/.env.example" smartcity-services/home/ubuntu/smartcity/.env
+        echo "[!] .env not found — copied .env.example. Update WAZUH_HOST before run_all.sh"
+    fi
 fi
 
 # ── Print summary ────────────────────────────────────────────────────────────
@@ -123,6 +123,6 @@ echo "  smartcity-services IP : $SC_IP"
 echo "  wazuh IP              : $WZ_IP"
 echo ""
 echo "Next steps:"
-echo "  1. Edit .env — set WAZUH_HOST=$WZ_IP"
-echo "     (run: incus exec smartcity-services -- nano /home/ubuntu/smartcity/.env)"
+echo "  1. Edit .env inside the container — set WAZUH_HOST=$WZ_IP"
+echo "     incus exec smartcity-services -- nano /home/ubuntu/smartcity/.env"
 echo "  2. bash scripts/run_all.sh"
