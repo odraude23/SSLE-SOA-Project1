@@ -10,7 +10,7 @@
 set -e
 
 PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-SHARED_LOGS="/shared/smartcity-logs"
+SHARED_LOGS="$HOME/smartcity-shared-logs"
 
 echo "=== Smart City SOA — Incus Setup ==="
 echo "Project: $PROJECT_DIR"
