@@ -24,7 +24,7 @@ if incus info smartcity-services &>/dev/null; then
     echo "[~] smartcity-services already exists, skipping creation"
 else
     echo "[*] Launching smartcity-services container (Ubuntu 22.04, nesting enabled for Docker)"
-    incus launch ubuntu:22.04 smartcity-services \
+    incus launch images:ubuntu/22.04 smartcity-services \
         --config limits.cpu=2 \
         --config limits.memory=3GiB \
         --config security.nesting=true
@@ -60,7 +60,7 @@ if incus info wazuh &>/dev/null; then
     echo "[~] wazuh already exists, skipping creation"
 else
     echo "[*] Launching wazuh container (Ubuntu 22.04)"
-    incus launch ubuntu:22.04 wazuh \
+    incus launch images:ubuntu/22.04 wazuh \
         --config limits.cpu=2 \
         --config limits.memory=4GiB
 
