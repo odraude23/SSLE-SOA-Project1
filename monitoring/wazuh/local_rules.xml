@@ -20,7 +20,7 @@
   <!-- Threat 1: auth failures (possible credential scanning / enumeration) -->
   <rule id="100100" level="8">
     <decoded_as>json</decoded_as>
-    <field name="action">auth_failed</field>
+    <field name="event_type">auth_failed</field>
     <description>Service-to-service authentication failure</description>
     <group>authentication_failed,</group>
   </rule>
@@ -36,7 +36,7 @@
   <!-- Threat 2: APT — honeypot hits -->
   <rule id="100200" level="10">
     <decoded_as>json</decoded_as>
-    <field name="action">HONEYPOT_HIT</field>
+    <field name="event_type">HONEYPOT_HIT</field>
     <description>Honeypot endpoint hit on zone aggregator — possible APT probe</description>
     <group>apt,honeypot,</group>
   </rule>
@@ -52,7 +52,7 @@
   <!-- Threat 3: Spam / email flood -->
   <rule id="100300" level="10">
     <decoded_as>json</decoded_as>
-    <field name="action">email_sent</field>
+    <field name="event_type">email_sent</field>
     <description>Alert email sent from alert-service</description>
     <group>spam,email,</group>
   </rule>
@@ -67,7 +67,7 @@
   <!-- Threat 3: failed email attempts (SpamAssassin blocking) -->
   <rule id="100302" level="8">
     <decoded_as>json</decoded_as>
-    <field name="action">email_failed</field>
+    <field name="event_type">email_failed</field>
     <description>Alert email delivery failure</description>
     <group>spam,email,</group>
   </rule>

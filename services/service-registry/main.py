@@ -54,7 +54,7 @@ def log_access(req: Request, action: str, detail: str = ""):
         "client_ip": req.client.host if req.client else "unknown",
         "method": req.method,
         "path": str(req.url.path),
-        "action": action,
+        "event_type": action,
         "detail": detail,
     }
     access_logger.info(json.dumps(record))
@@ -70,7 +70,7 @@ def prune_stale():
                 services.pop(iid)
                 access_logger.info(json.dumps({
                     "timestamp": datetime.now(timezone.utc).isoformat(),
-                    "action": "pruned",
+                    "event_type": "pruned",
                     "instance_id": iid,
                 }))
 

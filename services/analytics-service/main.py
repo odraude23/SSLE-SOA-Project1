@@ -30,7 +30,7 @@ def log_access(req: Request, action: str, detail: str = ""):
         "client_ip": req.client.host if req.client else "unknown",
         "method": req.method,
         "path": str(req.url.path),
-        "action": action,
+        "event_type": action,
         "detail": detail,
     }
     access_logger.info(json.dumps(record))

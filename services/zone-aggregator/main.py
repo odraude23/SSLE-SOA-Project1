@@ -58,7 +58,7 @@ def log_access(req: Request, action: str, detail: str = ""):
         "client_ip": req.client.host if req.client else "unknown",
         "method": req.method,
         "path": str(req.url.path),
-        "action": action,
+        "event_type": action,
         "detail": detail,
     }
     access_logger.info(json.dumps(record))
@@ -67,7 +67,7 @@ def log_access(req: Request, action: str, detail: str = ""):
 def log_event(action: str, detail: str = ""):
     record = {
         "timestamp": datetime.now(timezone.utc).isoformat(),
-        "action": action,
+        "event_type": action,
         "detail": detail,
         "zone": ZONE,
     }
@@ -215,7 +215,7 @@ async def honeypot_config(request: Request):
         "client_ip": request.client.host if request.client else "unknown",
         "method": request.method,
         "path": "/api/admin/config",
-        "action": "HONEYPOT_HIT",
+        "event_type": "HONEYPOT_HIT",
         "rule_id": "100200",
         "zone": ZONE,
     }
@@ -231,7 +231,7 @@ async def honeypot_metrics(request: Request):
         "client_ip": request.client.host if request.client else "unknown",
         "method": request.method,
         "path": "/api/admin/metrics",
-        "action": "HONEYPOT_HIT",
+        "event_type": "HONEYPOT_HIT",
         "rule_id": "100200",
         "zone": ZONE,
     }

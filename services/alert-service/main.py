@@ -55,7 +55,7 @@ def log_access(req: Request, action: str, detail: str = ""):
         "client_ip": req.client.host if req.client else "unknown",
         "method": req.method,
         "path": str(req.url.path),
-        "action": action,
+        "event_type": action,
         "detail": detail,
     }
     access_logger.info(json.dumps(record))
@@ -64,7 +64,7 @@ def log_access(req: Request, action: str, detail: str = ""):
 def log_mail(action: str, zone: str, subject: str, detail: str = ""):
     record = {
         "timestamp": datetime.now(timezone.utc).isoformat(),
-        "action": action,
+        "event_type": action,
         "zone": zone,
         "subject": subject,
         "detail": detail,
