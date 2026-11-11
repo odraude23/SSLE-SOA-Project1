@@ -80,25 +80,49 @@ else
         bash wazuh-install.sh -a --ignore-check 2>&1 | tee /root/wazuh-install.log
     "
 
-    echo "[*] Resetting Wazuh passwords to known values (waiting 30s for indexer)..."
-    incus exec wazuh -- bash -c "
-        sleep 30
-        /usr/share/wazuh-indexer/plugins/opensearch-security/tools/wazuh-passwords-tool.sh \
-            -u admin -p 'Wazuh1234!' 2>&1 | tail -5
-        /usr/share/wazuh-indexer/plugins/opensearch-security/tools/wazuh-passwords-tool.sh \
-            -u wazuh -p 'Wazuh1234!' 2>&1 | tail -5
-    " || echo "[!] Password reset failed — check /root/wazuh-install.log for the generated password"
-
-    echo "[*] Deploying Wazuh config"
-    incus file push "$PROJECT_DIR/monitoring/wazuh/ossec.conf" \
-        wazuh/var/ossec/etc/ossec.conf
+    echo "[*] Deploying Wazuh custom rules and active response"
     incus file push "$PROJECT_DIR/monitoring/wazuh/local_rules.xml" \
         wazuh/var/ossec/etc/rules/local_rules.xml
     incus file push "$PROJECT_DIR/monitoring/wazuh/block-threat.sh" \
         wazuh/var/ossec/active-response/bin/block-threat.sh
     incus exec wazuh -- chmod +x /var/ossec/active-response/bin/block-threat.sh
+
+    echo "[*] Injecting localfile monitors and active response into default ossec.conf"
+    incus exec wazuh -- python3 -c "
+additions = '''
+  <!-- SmartCity service logs (bind-mounted via shared Incus disk at /var/log/smartcity) -->
+  <localfile><log_format>json</log_format><location>/var/log/smartcity/registry/access.log</location></localfile>
+  <localfile><log_format>json</log_format><location>/var/log/smartcity/ingestion/access.log</location></localfile>
+  <localfile><log_format>json</log_format><location>/var/log/smartcity/storage/access.log</location></localfile>
+  <localfile><log_format>json</log_format><location>/var/log/smartcity/analytics/access.log</location></localfile>
+  <localfile><log_format>json</log_format><location>/var/log/smartcity/ops-portal/access.log</location></localfile>
+  <localfile><log_format>json</log_format><location>/var/log/smartcity/alert-service/access.log</location></localfile>
+  <localfile><log_format>json</log_format><location>/var/log/smartcity/zone-aggregator-north/access.log</location></localfile>
+  <localfile><log_format>json</log_format><location>/var/log/smartcity/zone-aggregator-center/access.log</location></localfile>
+  <localfile><log_format>json</log_format><location>/var/log/smartcity/zone-aggregator-south/access.log</location></localfile>
+  <localfile><log_format>syslog</log_format><location>/var/log/smartcity/mail/mail.log</location></localfile>
+  <!-- Active response: block IPs triggering DDoS/APT/spam rules -->
+  <command><name>block-threat</name><executable>block-threat.sh</executable><timeout_allowed>yes</timeout_allowed></command>
+  <active-response><command>block-threat</command><location>local</location><rules_id>100002,100101,100201,100301,100303</rules_id><timeout>300</timeout></active-response>
+'''
+path = '/var/ossec/etc/ossec.conf'
+cfg = open(path).read()
+if 'SmartCity service logs' not in cfg:
+    cfg = cfg.replace('</ossec_config>', additions + '</ossec_config>')
+    open(path, 'w').write(cfg)
+    print('Injected.')
+else:
+    print('Already injected, skipping.')
+"
+
     incus exec wazuh -- systemctl restart wazuh-manager
-    echo "[*] Copying project files into container"
+    incus exec wazuh -- systemctl is-active wazuh-manager
+fi
+
+# ── Copy project files into smartcity-services ──────────────────────────────
+if incus info smartcity-services &>/dev/null && \
+   ! incus exec smartcity-services -- test -d /home/ubuntu/smartcity/services 2>/dev/null; then
+    echo "[*] Copying project files into smartcity-services"
     incus exec smartcity-services -- mkdir -p /home/ubuntu/smartcity
     incus file push --recursive "$PROJECT_DIR/" smartcity-services/home/ubuntu/smartcity/
     incus exec smartcity-services -- chown -R ubuntu:ubuntu /home/ubuntu/smartcity
@@ -123,7 +147,12 @@ echo "=== Setup complete ==="
 echo "  smartcity-services IP : $SC_IP"
 echo "  wazuh IP              : $WZ_IP"
 echo ""
+WAZUH_ADMIN_PASS=$(incus exec wazuh -- grep -A1 "User: admin" /root/wazuh-install.log 2>/dev/null | grep "Password:" | awk '{print $2}' || echo "check: incus exec wazuh -- cat /root/wazuh-install.log")
+
+echo ""
 echo "Next steps:"
-echo "  1. Edit .env inside the container — set WAZUH_HOST=$WZ_IP"
+echo "  1. Edit .env inside the container:"
 echo "     incus exec smartcity-services -- nano /home/ubuntu/smartcity/.env"
+echo "     -> WAZUH_HOST=$WZ_IP"
+echo "     -> WAZUH_PASS=$WAZUH_ADMIN_PASS"
 echo "  2. bash scripts/run_all.sh"
