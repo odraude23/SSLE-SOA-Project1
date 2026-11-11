@@ -124,8 +124,8 @@ if incus info smartcity-services &>/dev/null && \
    ! incus exec smartcity-services -- test -d /home/ubuntu/smartcity/services 2>/dev/null; then
     echo "[*] Copying project files into smartcity-services"
     incus exec smartcity-services -- mkdir -p /home/ubuntu/smartcity
-    incus file push --recursive "$PROJECT_DIR/" smartcity-services/home/ubuntu/smartcity/
-    incus exec smartcity-services -- chown -R ubuntu:ubuntu /home/ubuntu/smartcity
+    tar -C "$PROJECT_DIR" -czf - . | incus exec smartcity-services -- bash -c "tar -xzf - -C /home/ubuntu/smartcity/"
+    incus exec smartcity-services -- chown -R ubuntu:ubuntu /home/ubuntu/smartcity 2>/dev/null || true
 
     echo "[*] Copying .env"
     if [ -f "$PROJECT_DIR/.env" ]; then
