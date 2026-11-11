@@ -1,0 +1,274 @@
+{
+  "title": "Smart City Overview",
+  "uid": "smartcity-overview",
+  "description": "Environmental monitoring — live sensor data per zone",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "10s",
+  "time": { "from": "now-15m", "to": "now" },
+  "timezone": "browser",
+  "tags": ["smartcity"],
+  "panels": [
+    {
+      "id": 1, "type": "row", "title": "Zone AQI (Air Quality Index)",
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 0}, "collapsed": false
+    },
+    {
+      "id": 2, "type": "stat", "title": "AQI — North",
+      "gridPos": {"h": 4, "w": 8, "x": 0, "y": 1},
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short", "decimals": 1,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {"color": "green", "value": null},
+              {"color": "yellow", "value": 51},
+              {"color": "orange", "value": 101},
+              {"color": "red", "value": 201}
+            ]
+          },
+          "color": {"mode": "thresholds"}
+        }
+      },
+      "options": {
+        "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
+        "colorMode": "background", "graphMode": "area", "justifyMode": "auto"
+      },
+      "targets": [{
+        "datasource": {"type": "prometheus", "uid": "prometheus-uid"},
+        "expr": "smartcity_zone_aqi_avg{zone=\"north\"}",
+        "instant": true, "legendFormat": "North"
+      }]
+    },
+    {
+      "id": 3, "type": "stat", "title": "AQI — Center",
+      "gridPos": {"h": 4, "w": 8, "x": 8, "y": 1},
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short", "decimals": 1,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {"color": "green", "value": null},
+              {"color": "yellow", "value": 51},
+              {"color": "orange", "value": 101},
+              {"color": "red", "value": 201}
+            ]
+          },
+          "color": {"mode": "thresholds"}
+        }
+      },
+      "options": {
+        "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
+        "colorMode": "background", "graphMode": "area", "justifyMode": "auto"
+      },
+      "targets": [{
+        "datasource": {"type": "prometheus", "uid": "prometheus-uid"},
+        "expr": "smartcity_zone_aqi_avg{zone=\"center\"}",
+        "instant": true, "legendFormat": "Center"
+      }]
+    },
+    {
+      "id": 4, "type": "stat", "title": "AQI — South",
+      "gridPos": {"h": 4, "w": 8, "x": 16, "y": 1},
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short", "decimals": 1,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {"color": "green", "value": null},
+              {"color": "yellow", "value": 51},
+              {"color": "orange", "value": 101},
+              {"color": "red", "value": 201}
+            ]
+          },
+          "color": {"mode": "thresholds"}
+        }
+      },
+      "options": {
+        "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
+        "colorMode": "background", "graphMode": "area", "justifyMode": "auto"
+      },
+      "targets": [{
+        "datasource": {"type": "prometheus", "uid": "prometheus-uid"},
+        "expr": "smartcity_zone_aqi_avg{zone=\"south\"}",
+        "instant": true, "legendFormat": "South"
+      }]
+    },
+    {
+      "id": 5, "type": "row", "title": "Temperature & Noise",
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 5}, "collapsed": false
+    },
+    {
+      "id": 6, "type": "stat", "title": "Temperature °C — North",
+      "gridPos": {"h": 4, "w": 4, "x": 0, "y": 6},
+      "fieldConfig": {
+        "defaults": {
+          "unit": "celsius", "decimals": 1,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [{"color": "blue", "value": null}, {"color": "green", "value": 15}, {"color": "yellow", "value": 30}, {"color": "red", "value": 36}]
+          },
+          "color": {"mode": "thresholds"}
+        }
+      },
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "colorMode": "value", "graphMode": "none"},
+      "targets": [{"datasource": {"type": "prometheus", "uid": "prometheus-uid"}, "expr": "smartcity_zone_temp_avg{zone=\"north\"}", "instant": true, "legendFormat": "North"}]
+    },
+    {
+      "id": 7, "type": "stat", "title": "Temperature °C — Center",
+      "gridPos": {"h": 4, "w": 4, "x": 4, "y": 6},
+      "fieldConfig": {
+        "defaults": {
+          "unit": "celsius", "decimals": 1,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [{"color": "blue", "value": null}, {"color": "green", "value": 15}, {"color": "yellow", "value": 30}, {"color": "red", "value": 36}]
+          },
+          "color": {"mode": "thresholds"}
+        }
+      },
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "colorMode": "value", "graphMode": "none"},
+      "targets": [{"datasource": {"type": "prometheus", "uid": "prometheus-uid"}, "expr": "smartcity_zone_temp_avg{zone=\"center\"}", "instant": true, "legendFormat": "Center"}]
+    },
+    {
+      "id": 8, "type": "stat", "title": "Temperature °C — South",
+      "gridPos": {"h": 4, "w": 4, "x": 8, "y": 6},
+      "fieldConfig": {
+        "defaults": {
+          "unit": "celsius", "decimals": 1,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [{"color": "blue", "value": null}, {"color": "green", "value": 15}, {"color": "yellow", "value": 30}, {"color": "red", "value": 36}]
+          },
+          "color": {"mode": "thresholds"}
+        }
+      },
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "colorMode": "value", "graphMode": "none"},
+      "targets": [{"datasource": {"type": "prometheus", "uid": "prometheus-uid"}, "expr": "smartcity_zone_temp_avg{zone=\"south\"}", "instant": true, "legendFormat": "South"}]
+    },
+    {
+      "id": 9, "type": "stat", "title": "Noise dB — North",
+      "gridPos": {"h": 4, "w": 4, "x": 12, "y": 6},
+      "fieldConfig": {
+        "defaults": {
+          "unit": "dB", "decimals": 1,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 65}, {"color": "orange", "value": 80}, {"color": "red", "value": 90}]
+          },
+          "color": {"mode": "thresholds"}
+        }
+      },
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "colorMode": "value", "graphMode": "none"},
+      "targets": [{"datasource": {"type": "prometheus", "uid": "prometheus-uid"}, "expr": "smartcity_zone_noise_avg{zone=\"north\"}", "instant": true, "legendFormat": "North"}]
+    },
+    {
+      "id": 10, "type": "stat", "title": "Noise dB — Center",
+      "gridPos": {"h": 4, "w": 4, "x": 16, "y": 6},
+      "fieldConfig": {
+        "defaults": {
+          "unit": "dB", "decimals": 1,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 65}, {"color": "orange", "value": 80}, {"color": "red", "value": 90}]
+          },
+          "color": {"mode": "thresholds"}
+        }
+      },
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "colorMode": "value", "graphMode": "none"},
+      "targets": [{"datasource": {"type": "prometheus", "uid": "prometheus-uid"}, "expr": "smartcity_zone_noise_avg{zone=\"center\"}", "instant": true, "legendFormat": "Center"}]
+    },
+    {
+      "id": 11, "type": "stat", "title": "Noise dB — South",
+      "gridPos": {"h": 4, "w": 4, "x": 20, "y": 6},
+      "fieldConfig": {
+        "defaults": {
+          "unit": "dB", "decimals": 1,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 65}, {"color": "orange", "value": 80}, {"color": "red", "value": 90}]
+          },
+          "color": {"mode": "thresholds"}
+        }
+      },
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "colorMode": "value", "graphMode": "none"},
+      "targets": [{"datasource": {"type": "prometheus", "uid": "prometheus-uid"}, "expr": "smartcity_zone_noise_avg{zone=\"south\"}", "instant": true, "legendFormat": "South"}]
+    },
+    {
+      "id": 12, "type": "row", "title": "Environmental Trends",
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 10}, "collapsed": false
+    },
+    {
+      "id": 13, "type": "timeseries", "title": "AQI over time — all zones",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 11},
+      "fieldConfig": {"defaults": {"unit": "short", "custom": {"lineInterpolation": "smooth"}}},
+      "options": {"tooltip": {"mode": "multi"}, "legend": {"displayMode": "list", "placement": "bottom"}},
+      "targets": [{
+        "datasource": {"type": "prometheus", "uid": "prometheus-uid"},
+        "expr": "smartcity_zone_aqi_avg",
+        "legendFormat": "{{zone}}"
+      }]
+    },
+    {
+      "id": 14, "type": "timeseries", "title": "Temperature over time — all zones",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 11},
+      "fieldConfig": {"defaults": {"unit": "celsius", "custom": {"lineInterpolation": "smooth"}}},
+      "options": {"tooltip": {"mode": "multi"}, "legend": {"displayMode": "list", "placement": "bottom"}},
+      "targets": [{
+        "datasource": {"type": "prometheus", "uid": "prometheus-uid"},
+        "expr": "smartcity_zone_temp_avg",
+        "legendFormat": "{{zone}}"
+      }]
+    },
+    {
+      "id": 15, "type": "row", "title": "Service Health",
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 19}, "collapsed": false
+    },
+    {
+      "id": 16, "type": "timeseries", "title": "HTTP Request Rate — all services",
+      "gridPos": {"h": 8, "w": 24, "x": 0, "y": 20},
+      "fieldConfig": {"defaults": {"unit": "reqps", "custom": {"lineInterpolation": "smooth"}}},
+      "options": {"tooltip": {"mode": "multi"}, "legend": {"displayMode": "list", "placement": "bottom"}},
+      "targets": [{
+        "datasource": {"type": "prometheus", "uid": "prometheus-uid"},
+        "expr": "sum(rate(http_requests_total[1m])) by (job)",
+        "legendFormat": "{{job}}"
+      }]
+    },
+    {
+      "id": 17, "type": "table", "title": "Service Up/Down",
+      "gridPos": {"h": 6, "w": 24, "x": 0, "y": 28},
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": [
+          {
+            "matcher": {"id": "byName", "options": "Value"},
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {"options": {"0": {"color": "red", "text": "DOWN"}, "1": {"color": "green", "text": "UP"}}, "type": "value"}
+                ]
+              },
+              {"id": "custom.displayMode", "value": "color-background"}
+            ]
+          }
+        ]
+      },
+      "options": {"sortBy": [{"displayName": "Value", "desc": false}]},
+      "targets": [{
+        "datasource": {"type": "prometheus", "uid": "prometheus-uid"},
+        "expr": "up",
+        "instant": true,
+        "legendFormat": "{{job}}"
+      }],
+      "transformations": [
+        {"id": "labelsToFields", "options": {"mode": "columns"}},
+        {"id": "organize", "options": {"renameByName": {"job": "Service", "Value": "Status"}}}
+      ]
+    }
+  ]
+}

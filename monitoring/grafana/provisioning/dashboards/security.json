@@ -1,0 +1,181 @@
+{
+  "title": "Security Dashboard",
+  "uid": "smartcity-security",
+  "description": "Threat detection — DDoS, APT, Spam / Wazuh alerts",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "10s",
+  "time": { "from": "now-30m", "to": "now" },
+  "timezone": "browser",
+  "tags": ["smartcity", "security"],
+  "panels": [
+    {
+      "id": 1, "type": "row", "title": "Wazuh Status",
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 0}, "collapsed": false
+    },
+    {
+      "id": 2, "type": "stat", "title": "Wazuh SIEM",
+      "gridPos": {"h": 4, "w": 4, "x": 0, "y": 1},
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": null}, {"color": "green", "value": 1}]},
+          "color": {"mode": "thresholds"},
+          "mappings": [{"options": {"0": {"text": "DOWN"}, "1": {"text": "UP"}}, "type": "value"}]
+        }
+      },
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "colorMode": "background", "graphMode": "none"},
+      "targets": [{"datasource": {"type": "prometheus", "uid": "prometheus-uid"}, "expr": "wazuh_up", "instant": true, "legendFormat": ""}]
+    },
+    {
+      "id": 3, "type": "stat", "title": "Active Agents",
+      "gridPos": {"h": 4, "w": 4, "x": 4, "y": 1},
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {"mode": "absolute", "steps": [{"color": "yellow", "value": null}, {"color": "green", "value": 1}]},
+          "color": {"mode": "thresholds"}
+        }
+      },
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "colorMode": "value", "graphMode": "none"},
+      "targets": [{"datasource": {"type": "prometheus", "uid": "prometheus-uid"}, "expr": "wazuh_agents_active", "instant": true, "legendFormat": ""}]
+    },
+    {
+      "id": 4, "type": "stat", "title": "Total Alerts (all time)",
+      "gridPos": {"h": 4, "w": 4, "x": 8, "y": 1},
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 10}, {"color": "red", "value": 50}]},
+          "color": {"mode": "thresholds"}
+        }
+      },
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "colorMode": "background", "graphMode": "none"},
+      "targets": [{"datasource": {"type": "prometheus", "uid": "prometheus-uid"}, "expr": "sum(wazuh_alerts_total)", "instant": true, "legendFormat": ""}]
+    },
+    {
+      "id": 5, "type": "stat", "title": "Alert Emails Sent",
+      "gridPos": {"h": 4, "w": 4, "x": 12, "y": 1},
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 5}, {"color": "red", "value": 15}]},
+          "color": {"mode": "thresholds"}
+        }
+      },
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "colorMode": "background", "graphMode": "none"},
+      "targets": [{"datasource": {"type": "prometheus", "uid": "prometheus-uid"}, "expr": "sum(alert_emails_total)", "instant": true, "legendFormat": ""}]
+    },
+    {
+      "id": 6, "type": "row", "title": "Threat 1 — DDoS Detection",
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 5}, "collapsed": false
+    },
+    {
+      "id": 7, "type": "timeseries", "title": "Ops Portal — Request Rate / 10s  (threshold: 50)",
+      "gridPos": {"h": 8, "w": 24, "x": 0, "y": 6},
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "custom": {"lineInterpolation": "smooth"},
+          "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "red", "value": 50}]}
+        }
+      },
+      "options": {
+        "tooltip": {"mode": "single"},
+        "legend": {"displayMode": "list", "placement": "bottom"},
+        "thresholds": {"mode": "line", "show": true}
+      },
+      "targets": [
+        {
+          "datasource": {"type": "prometheus", "uid": "prometheus-uid"},
+          "expr": "sum(rate(http_requests_total{job=\"ops-portal\"}[10s]))",
+          "legendFormat": "ops-portal req/s"
+        }
+      ]
+    },
+    {
+      "id": 8, "type": "row", "title": "Threat 2 — APT / Honeypot",
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 14}, "collapsed": false
+    },
+    {
+      "id": 9, "type": "timeseries", "title": "Honeypot Hits — /api/admin/* (rule 100200/100201)",
+      "gridPos": {"h": 8, "w": 24, "x": 0, "y": 15},
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": {"lineInterpolation": "stepAfter"},
+          "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "orange", "value": 1}, {"color": "red", "value": 3}]}
+        }
+      },
+      "options": {"tooltip": {"mode": "multi"}, "legend": {"displayMode": "list", "placement": "bottom"}},
+      "targets": [
+        {
+          "datasource": {"type": "prometheus", "uid": "prometheus-uid"},
+          "expr": "increase(wazuh_alerts_total{rule_id=\"100200\"}[5m])",
+          "legendFormat": "Honeypot hit (100200)"
+        },
+        {
+          "datasource": {"type": "prometheus", "uid": "prometheus-uid"},
+          "expr": "increase(wazuh_alerts_total{rule_id=\"100201\"}[5m])",
+          "legendFormat": "APT confirmed (100201)"
+        }
+      ]
+    },
+    {
+      "id": 10, "type": "row", "title": "Threat 3 — Email Spam / Alert Flood",
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 23}, "collapsed": false
+    },
+    {
+      "id": 11, "type": "timeseries", "title": "Alert Email Rate (threshold: 10/min)",
+      "gridPos": {"h": 8, "w": 24, "x": 0, "y": 24},
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": {"lineInterpolation": "smooth"},
+          "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 5}, {"color": "red", "value": 10}]}
+        }
+      },
+      "options": {
+        "tooltip": {"mode": "multi"},
+        "legend": {"displayMode": "list", "placement": "bottom"},
+        "thresholds": {"mode": "line", "show": true}
+      },
+      "targets": [
+        {
+          "datasource": {"type": "prometheus", "uid": "prometheus-uid"},
+          "expr": "sum(increase(alert_emails_total[1m])) by (zone)",
+          "legendFormat": "zone={{zone}}"
+        },
+        {
+          "datasource": {"type": "prometheus", "uid": "prometheus-uid"},
+          "expr": "increase(wazuh_alerts_total{rule_id=\"100301\"}[1m])",
+          "legendFormat": "Wazuh flood rule 100301"
+        }
+      ]
+    },
+    {
+      "id": 12, "type": "row", "title": "Wazuh Alerts — All Rules",
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 32}, "collapsed": false
+    },
+    {
+      "id": 13, "type": "table", "title": "Wazuh Alerts by Rule ID",
+      "gridPos": {"h": 8, "w": 24, "x": 0, "y": 33},
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": [
+          {
+            "matcher": {"id": "byName", "options": "Value"},
+            "properties": [{"id": "custom.displayMode", "value": "lcd-gauge"}, {"id": "color", "value": {"mode": "continuous-RdYlGr"}}]
+          }
+        ]
+      },
+      "options": {"sortBy": [{"displayName": "Value", "desc": true}]},
+      "targets": [{
+        "datasource": {"type": "prometheus", "uid": "prometheus-uid"},
+        "expr": "sort_desc(sum(wazuh_alerts_total) by (rule_id, description))",
+        "instant": true,
+        "legendFormat": "{{rule_id}} {{description}}"
+      }],
+      "transformations": [
+        {"id": "labelsToFields", "options": {"mode": "columns"}},
+        {"id": "organize", "options": {"renameByName": {"rule_id": "Rule ID", "description": "Description", "Value": "Count"}}}
+      ]
+    }
+  ]
+}

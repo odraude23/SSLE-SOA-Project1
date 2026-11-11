@@ -1,0 +1,82 @@
+<group name="smartcity,">
+
+  <!-- Threat 1: DDoS — ops-portal high request rate -->
+  <rule id="100001" level="10">
+    <decoded_as>json</decoded_as>
+    <field name="path">^/$|^/api/data$</field>
+    <description>High frequency access to ops-portal endpoint</description>
+    <group>ddos,</group>
+    <options>alert_by_email</options>
+  </rule>
+
+  <rule id="100002" level="12" frequency="50" timeframe="10">
+    <if_matched_sid>100001</if_matched_sid>
+    <same_field>client_ip</same_field>
+    <description>DDoS detected: 50+ requests in 10s from same IP on ops-portal</description>
+    <group>ddos,attack,</group>
+    <options>alert_by_email</options>
+  </rule>
+
+  <!-- Threat 1: auth failures (possible credential scanning / enumeration) -->
+  <rule id="100100" level="8">
+    <decoded_as>json</decoded_as>
+    <field name="action">auth_failed</field>
+    <description>Service-to-service authentication failure</description>
+    <group>authentication_failed,</group>
+  </rule>
+
+  <rule id="100101" level="12" frequency="5" timeframe="60">
+    <if_matched_sid>100100</if_matched_sid>
+    <same_field>client_ip</same_field>
+    <description>Repeated auth failures from same IP — possible credential attack</description>
+    <group>authentication_failed,attack,</group>
+    <options>alert_by_email</options>
+  </rule>
+
+  <!-- Threat 2: APT — honeypot hits -->
+  <rule id="100200" level="10">
+    <decoded_as>json</decoded_as>
+    <field name="action">HONEYPOT_HIT</field>
+    <description>Honeypot endpoint hit on zone aggregator — possible APT probe</description>
+    <group>apt,honeypot,</group>
+  </rule>
+
+  <rule id="100201" level="14" frequency="3" timeframe="300">
+    <if_matched_sid>100200</if_matched_sid>
+    <same_field>client_ip</same_field>
+    <description>APT confirmed: 3+ honeypot hits in 5 minutes from same IP</description>
+    <group>apt,attack,persistent,</group>
+    <options>alert_by_email</options>
+  </rule>
+
+  <!-- Threat 3: Spam / email flood -->
+  <rule id="100300" level="10">
+    <decoded_as>json</decoded_as>
+    <field name="action">email_sent</field>
+    <description>Alert email sent from alert-service</description>
+    <group>spam,email,</group>
+  </rule>
+
+  <rule id="100301" level="14" frequency="10" timeframe="60">
+    <if_matched_sid>100300</if_matched_sid>
+    <description>Email flood: 10+ alert emails in 60 seconds — SpamAssassin defense triggered</description>
+    <group>spam,attack,flood,</group>
+    <options>alert_by_email</options>
+  </rule>
+
+  <!-- Threat 3: failed email attempts (SpamAssassin blocking) -->
+  <rule id="100302" level="8">
+    <decoded_as>json</decoded_as>
+    <field name="action">email_failed</field>
+    <description>Alert email delivery failure</description>
+    <group>spam,email,</group>
+  </rule>
+
+  <rule id="100303" level="12" frequency="5" timeframe="60">
+    <if_matched_sid>100302</if_matched_sid>
+    <description>Repeated email delivery failures — possible SpamAssassin quarantine in effect</description>
+    <group>spam,attack,</group>
+    <options>alert_by_email</options>
+  </rule>
+
+</group>

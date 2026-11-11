@@ -1,0 +1,215 @@
+version: "3.8"
+
+networks:
+  smartcity:
+    driver: bridge
+
+volumes:
+  storage-data:
+
+services:
+
+  # ── Service Registry ──────────────────────────────────────────────────────
+  service-registry:
+    build: ./services/service-registry
+    container_name: service-registry
+    networks: [smartcity]
+    ports: ["5050:5050"]
+    environment:
+      INTERNAL_TOKEN: ${INTERNAL_TOKEN:-changeme}
+      PORT: "5050"
+    volumes:
+      - ./logs/registry:/var/log/registry
+    restart: unless-stopped
+
+  # ── Storage ───────────────────────────────────────────────────────────────
+  storage-service:
+    build: ./services/storage-service
+    container_name: storage-service
+    networks: [smartcity]
+    environment:
+      INTERNAL_TOKEN: ${INTERNAL_TOKEN:-changeme}
+      PORT: "5300"
+      DB_PATH: /data/smartcity.db
+    volumes:
+      - storage-data:/data
+      - ./logs/storage:/var/log/storage
+    restart: unless-stopped
+
+  # ── Ingestion ─────────────────────────────────────────────────────────────
+  ingestion-service:
+    build: ./services/ingestion-service
+    container_name: ingestion-service
+    networks: [smartcity]
+    environment:
+      INTERNAL_TOKEN: ${INTERNAL_TOKEN:-changeme}
+      REGISTRY_URL: http://service-registry:5050
+      STORAGE_URL: http://storage-service:5300
+      ALERT_URL: http://alert-service:5500
+      PORT: "5200"
+    volumes:
+      - ./logs/ingestion:/var/log/ingestion
+    depends_on: [service-registry, storage-service]
+    restart: unless-stopped
+
+  # ── Analytics ─────────────────────────────────────────────────────────────
+  analytics-service:
+    build: ./services/analytics-service
+    container_name: analytics-service
+    networks: [smartcity]
+    environment:
+      INTERNAL_TOKEN: ${INTERNAL_TOKEN:-changeme}
+      REGISTRY_URL: http://service-registry:5050
+      STORAGE_URL: http://storage-service:5300
+      PORT: "5400"
+    volumes:
+      - ./logs/analytics:/var/log/analytics
+    depends_on: [storage-service]
+    restart: unless-stopped
+
+  # ── Mail server (Postfix + SpamAssassin) ──────────────────────────────────
+  mail-server:
+    build: ./services/mail-server
+    container_name: mail-server
+    networks: [smartcity]
+    ports: ["25:25"]
+    volumes:
+      - ./logs/mail:/var/log/mail
+      - ./mailbox:/var/mail/smartcity.local
+    restart: unless-stopped
+
+  # ── Alert service ─────────────────────────────────────────────────────────
+  alert-service:
+    build: ./services/alert-service
+    container_name: alert-service
+    networks: [smartcity]
+    environment:
+      INTERNAL_TOKEN: ${INTERNAL_TOKEN:-changeme}
+      REGISTRY_URL: http://service-registry:5050
+      PORT: "5500"
+      SMTP_HOST: mail-server
+      SMTP_PORT: "25"
+      ALERT_EMAIL_FROM: alerts@smartcity.local
+      ALERT_EMAIL_TO: operator@smartcity.local
+      AQI_THRESHOLD: "150"
+      TEMP_THRESHOLD: "35"
+      NOISE_THRESHOLD: "80"
+    volumes:
+      - ./logs/alert-service:/var/log/alert-service
+    depends_on: [mail-server]
+    restart: unless-stopped
+
+  # ── Ops Portal ────────────────────────────────────────────────────────────
+  ops-portal:
+    build: ./services/ops-portal
+    container_name: ops-portal
+    networks: [smartcity]
+    ports: ["5600:5600"]
+    environment:
+      INTERNAL_TOKEN: ${INTERNAL_TOKEN:-changeme}
+      REGISTRY_URL: http://service-registry:5050
+      ANALYTICS_URL: http://analytics-service:5400
+      PORT: "5600"
+    volumes:
+      - ./logs/ops-portal:/var/log/ops-portal
+    depends_on: [analytics-service]
+    restart: unless-stopped
+
+  # ── Zone Aggregators ──────────────────────────────────────────────────────
+  zone-aggregator-north:
+    build: ./services/zone-aggregator
+    container_name: zone-aggregator-north
+    networks: [smartcity]
+    environment:
+      ZONE: north
+      PORT: "5100"
+      REGISTRY_URL: http://service-registry:5050
+      INGESTION_URL: http://ingestion-service:5200
+      INTERNAL_TOKEN: ${INTERNAL_TOKEN:-changeme}
+      NUM_SENSORS: "3"
+      AGGREGATION_INTERVAL: "10"
+    volumes:
+      - ./logs/zone-aggregator-north:/var/log/zone-aggregator-north
+    depends_on: [service-registry, ingestion-service]
+    restart: unless-stopped
+
+  zone-aggregator-center:
+    build: ./services/zone-aggregator
+    container_name: zone-aggregator-center
+    networks: [smartcity]
+    environment:
+      ZONE: center
+      PORT: "5101"
+      REGISTRY_URL: http://service-registry:5050
+      INGESTION_URL: http://ingestion-service:5200
+      INTERNAL_TOKEN: ${INTERNAL_TOKEN:-changeme}
+      NUM_SENSORS: "3"
+      AGGREGATION_INTERVAL: "10"
+    volumes:
+      - ./logs/zone-aggregator-center:/var/log/zone-aggregator-center
+    depends_on: [service-registry, ingestion-service]
+    restart: unless-stopped
+
+  zone-aggregator-south:
+    build: ./services/zone-aggregator
+    container_name: zone-aggregator-south
+    networks: [smartcity]
+    environment:
+      ZONE: south
+      PORT: "5102"
+      REGISTRY_URL: http://service-registry:5050
+      INGESTION_URL: http://ingestion-service:5200
+      INTERNAL_TOKEN: ${INTERNAL_TOKEN:-changeme}
+      NUM_SENSORS: "3"
+      AGGREGATION_INTERVAL: "10"
+    volumes:
+      - ./logs/zone-aggregator-south:/var/log/zone-aggregator-south
+    depends_on: [service-registry, ingestion-service]
+    restart: unless-stopped
+
+  # ── Prometheus ────────────────────────────────────────────────────────────
+  prometheus:
+    image: prom/prometheus:v2.55.0
+    container_name: prometheus
+    networks: [smartcity]
+    ports: ["9090:9090"]
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.enable-lifecycle"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./monitoring/prometheus_rules.yml:/etc/prometheus/prometheus_rules.yml:ro
+    restart: unless-stopped
+
+  # ── Grafana ───────────────────────────────────────────────────────────────
+  grafana:
+    image: grafana/grafana:11.3.0
+    container_name: grafana
+    networks: [smartcity]
+    ports: ["3000:3000"]
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-admin}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /etc/grafana/provisioning/dashboards/smartcity_overview.json
+    volumes:
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+    depends_on: [prometheus]
+    restart: unless-stopped
+
+  # ── Wazuh Exporter ────────────────────────────────────────────────────────
+  wazuh-exporter:
+    build: ./wazuh-exporter
+    container_name: wazuh-exporter
+    networks: [smartcity]
+    environment:
+      WAZUH_HOST: ${WAZUH_HOST:-wazuh}
+      WAZUH_PORT: "55000"
+      WAZUH_USER: wazuh
+      WAZUH_PASS: ${WAZUH_PASS:-wazuh}
+      ALERTS_JSON: /wazuh-alerts/alerts.json
+      EXPORTER_PORT: "9100"
+    volumes:
+      - ${WAZUH_ALERTS_PATH:-./logs/wazuh-alerts}:/wazuh-alerts:ro
+    restart: unless-stopped

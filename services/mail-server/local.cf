@@ -1,0 +1,19 @@
+# SpamAssassin local configuration for Smart City demo
+
+# Lower threshold so alert-flood emails are reliably caught
+required_score 4.0
+report_safe 0
+rewrite_header Subject *****SPAM*****
+
+# Custom rules: match our PoC email patterns
+header SMARTCITY_URGENT     Subject =~ /URGENT.*CRITICAL/i
+score  SMARTCITY_URGENT     3.0
+
+header SMARTCITY_EVACUATE   Subject =~ /EVACUATE/i
+score  SMARTCITY_EVACUATE   2.0
+
+header SMARTCITY_CAPS       Subject =~ /^\[URGENT\]/
+score  SMARTCITY_CAPS       1.5
+
+# Standard rules already in SpamAssassin also fire on these emails:
+# SUBJ_ALL_CAPS, MISSING_DATE, MISSING_MID — no extra config needed

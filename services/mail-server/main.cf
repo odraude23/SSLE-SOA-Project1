@@ -1,0 +1,24 @@
+myhostname = mail.smartcity.local
+mydomain = smartcity.local
+myorigin = $mydomain
+mydestination = $myhostname, localhost.$mydomain, localhost, $mydomain
+inet_interfaces = all
+inet_protocols = ipv4
+smtpd_banner = $myhostname ESMTP SmartCity Mail
+biff = no
+append_dot_mydomain = no
+readme_directory = no
+
+# Accept mail from any internal source (Docker network)
+mynetworks = 0.0.0.0/0
+smtpd_relay_restrictions = permit_mynetworks
+
+# Deliver to local mbox
+home_mailbox = Maildir/
+mailbox_command =
+
+# SpamAssassin content filter
+content_filter = spamassassin
+
+# Logging
+maillog_file = /var/log/mail/mail.log
