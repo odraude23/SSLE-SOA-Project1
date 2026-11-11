@@ -80,10 +80,11 @@ else
         bash wazuh-install.sh -a --ignore-check 2>&1 | tee /root/wazuh-install.log
     "
 
-    echo "[*] Resetting Wazuh API password to known value (Wazuh1234!)..."
+    echo "[*] Resetting Wazuh passwords to known values (waiting 30s for indexer)..."
     incus exec wazuh -- bash -c "
-        # Wait for indexer to be ready
-        sleep 10
+        sleep 30
+        /usr/share/wazuh-indexer/plugins/opensearch-security/tools/wazuh-passwords-tool.sh \
+            -u admin -p 'Wazuh1234!' 2>&1 | tail -5
         /usr/share/wazuh-indexer/plugins/opensearch-security/tools/wazuh-passwords-tool.sh \
             -u wazuh -p 'Wazuh1234!' 2>&1 | tail -5
     " || echo "[!] Password reset failed — check /root/wazuh-install.log for the generated password"
