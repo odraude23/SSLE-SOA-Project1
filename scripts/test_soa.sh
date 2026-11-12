@@ -46,10 +46,11 @@ except: print(0)" 2>/dev/null || echo 0)
 # ── 3. Internal tests (run inside Docker network) ────────────────────────────
 echo ""
 echo "--- Pushing internal test runner ---"
+incus exec smartcity-services -- bash -c "rm -f /root/test_internal.py" 2>/dev/null || true
 incus file push "$PROJECT_DIR/scripts/test_internal.py" \
-    smartcity-services/tmp/test_internal.py
+    smartcity-services/root/test_internal.py
 incus exec smartcity-services -- bash -c \
-    "docker cp /tmp/test_internal.py service-registry:/tmp/test_internal.py"
+    "docker cp /root/test_internal.py service-registry:/tmp/test_internal.py"
 
 echo "--- Running internal tests ---"
 internal_out=$(incus exec smartcity-services -- bash -c \
