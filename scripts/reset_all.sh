@@ -47,6 +47,10 @@ echo "[*] Stopping Docker services and wiping volumes..."
 incus exec smartcity-services -- bash -c \
     "cd /home/ubuntu/smartcity && docker compose down -v" 2>/dev/null || true
 
+# ── Clear Docker build cache and images ──────────────────────────────────────
+echo "[*] Clearing Docker build cache and images..."
+incus exec smartcity-services -- docker system prune -af 2>/dev/null || true
+
 # ── Clear shared service logs and wazuh alerts ───────────────────────────────
 echo "[*] Clearing shared service logs at $SHARED_LOGS"
 find "$SHARED_LOGS" -type f -delete 2>/dev/null || true

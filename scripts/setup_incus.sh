@@ -18,7 +18,8 @@ echo "Project: $PROJECT_DIR"
 
 # ── Shared directories on the Incus host ────────────────────────────────────
 echo "[*] Creating shared directories"
-mkdir -p "$SHARED_LOGS"
+mkdir -p "$SHARED_LOGS"/{registry,ingestion,storage,analytics,ops-portal,alert-service,zone-aggregator-north,zone-aggregator-center,zone-aggregator-south,mail}
+chmod -R 777 "$SHARED_LOGS"
 mkdir -p "$WAZUH_ALERTS"
 chmod 777 "$WAZUH_ALERTS"
 
