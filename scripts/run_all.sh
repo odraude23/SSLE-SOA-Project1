@@ -1,30 +1,31 @@
 #!/bin/bash
-# Start all services via docker compose inside the smartcity-services Incus VM.
+# Start all services: brings up Wazuh, then Docker Compose inside smartcity-services.
 set -e
 
 echo "=== Smart City SOA — Starting Services ==="
 
-# Update WAZUH_HOST in .env inside the VM
-WZ_IP=$(incus info wazuh 2>/dev/null | grep -oP 'eth0.*?\K[\d.]+' | head -1 || \
-        incus info wazuh 2>/dev/null | grep -oP 'enp.*?\K[\d.]+' | head -1 || echo "")
-
-if [ -n "$WZ_IP" ]; then
-    echo "[*] Detected wazuh IP: $WZ_IP — updating .env"
-    incus exec smartcity-services -- bash -c "
-        cd /home/ubuntu/smartcity
-        sed -i 's|WAZUH_HOST=.*|WAZUH_HOST=$WZ_IP|' .env
-    "
+# ── Start Wazuh container ────────────────────────────────────────────────────
+if incus info wazuh &>/dev/null; then
+    STATE=$(incus info wazuh | grep -oP 'Status: \K\w+')
+    if [ "$STATE" != "RUNNING" ]; then
+        echo "[*] Starting wazuh container..."
+        incus start wazuh
+        sleep 5
+    else
+        echo "[~] wazuh already running"
+    fi
 else
-    echo "[!] Could not detect wazuh IP. Update WAZUH_HOST in .env manually."
+    echo "[!] wazuh container not found — run setup_incus.sh first"
+    exit 1
 fi
 
+# ── Start Docker Compose ─────────────────────────────────────────────────────
 echo "[*] Running docker compose up --build"
 incus exec smartcity-services -- bash -c "
     cd /home/ubuntu/smartcity
     docker compose up --build -d
 "
 
-# Get VM IP for user-facing URLs
 SC_IP=$(incus info smartcity-services 2>/dev/null | grep -oP 'eth0.*?\K[\d.]+' | head -1 || \
         incus info smartcity-services 2>/dev/null | grep -oP 'enp.*?\K[\d.]+' | head -1 || echo "smartcity-services")
 

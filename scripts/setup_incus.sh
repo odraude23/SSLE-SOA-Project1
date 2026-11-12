@@ -119,6 +119,27 @@ else:
     incus exec wazuh -- systemctl is-active wazuh-manager
 fi
 
+# ── Resolve IPs and Wazuh password ──────────────────────────────────────────
+SC_IP=$(incus info smartcity-services 2>/dev/null | grep -oP 'eth0.*?\K[\d.]+' | head -1 || \
+        incus info smartcity-services 2>/dev/null | grep -oP 'enp.*?\K[\d.]+' | head -1 || echo "pending")
+WZ_IP=$(incus info wazuh 2>/dev/null | grep -oP 'eth0.*?\K[\d.]+' | head -1 || \
+        incus info wazuh 2>/dev/null | grep -oP 'enp.*?\K[\d.]+' | head -1 || echo "pending")
+WAZUH_PASS=$(incus exec wazuh -- grep -A2 "^    User: wazuh$" /root/wazuh-install.log 2>/dev/null | grep "Password:" | awk '{print $2}')
+if [ -z "$WAZUH_PASS" ]; then
+    WAZUH_PASS=$(incus exec wazuh -- grep -A2 "User: admin" /root/wazuh-install.log 2>/dev/null | grep "Password:" | awk '{print $2}')
+fi
+if [ -z "$WAZUH_PASS" ]; then
+    WAZUH_PASS="CHANGE_ME — check: incus exec wazuh -- cat /root/wazuh-install.log"
+fi
+
+# ── Generate .env from .env.example ─────────────────────────────────────────
+INTERNAL_TOKEN=$(openssl rand -hex 32)
+echo "[*] Generating .env (WAZUH_HOST=$WZ_IP)"
+cp "$PROJECT_DIR/.env.example" "$PROJECT_DIR/.env"
+sed -i "s|^INTERNAL_TOKEN=.*|INTERNAL_TOKEN=$INTERNAL_TOKEN|" "$PROJECT_DIR/.env"
+sed -i "s|^WAZUH_HOST=.*|WAZUH_HOST=$WZ_IP|" "$PROJECT_DIR/.env"
+sed -i "s|^WAZUH_PASS=.*|WAZUH_PASS=$WAZUH_PASS|" "$PROJECT_DIR/.env"
+
 # ── Copy project files into smartcity-services ──────────────────────────────
 if incus info smartcity-services &>/dev/null && \
    ! incus exec smartcity-services -- test -d /home/ubuntu/smartcity/services 2>/dev/null; then
@@ -126,33 +147,15 @@ if incus info smartcity-services &>/dev/null && \
     incus exec smartcity-services -- mkdir -p /home/ubuntu/smartcity
     tar -C "$PROJECT_DIR" -czf - . | incus exec smartcity-services -- bash -c "tar -xzf - -C /home/ubuntu/smartcity/"
     incus exec smartcity-services -- chown -R ubuntu:ubuntu /home/ubuntu/smartcity 2>/dev/null || true
-
-    echo "[*] Copying .env"
-    if [ -f "$PROJECT_DIR/.env" ]; then
-        incus file push "$PROJECT_DIR/.env" smartcity-services/home/ubuntu/smartcity/.env
-    else
-        incus file push "$PROJECT_DIR/.env.example" smartcity-services/home/ubuntu/smartcity/.env
-        echo "[!] .env not found — copied .env.example. Update WAZUH_HOST before run_all.sh"
-    fi
+    incus file push "$PROJECT_DIR/.env" smartcity-services/home/ubuntu/smartcity/.env
 fi
 
 # ── Print summary ────────────────────────────────────────────────────────────
-SC_IP=$(incus info smartcity-services 2>/dev/null | grep -oP 'eth0.*?\K[\d.]+' | head -1 || \
-        incus info smartcity-services 2>/dev/null | grep -oP 'enp.*?\K[\d.]+' | head -1 || echo "pending")
-WZ_IP=$(incus info wazuh 2>/dev/null | grep -oP 'eth0.*?\K[\d.]+' | head -1 || \
-        incus info wazuh 2>/dev/null | grep -oP 'enp.*?\K[\d.]+' | head -1 || echo "pending")
-
 echo ""
 echo "=== Setup complete ==="
 echo "  smartcity-services IP : $SC_IP"
 echo "  wazuh IP              : $WZ_IP"
+echo "  WAZUH_PASS            : $WAZUH_PASS"
+echo "  .env written to       : $PROJECT_DIR/.env"
 echo ""
-WAZUH_ADMIN_PASS=$(incus exec wazuh -- grep -A1 "User: admin" /root/wazuh-install.log 2>/dev/null | grep "Password:" | awk '{print $2}' || echo "check: incus exec wazuh -- cat /root/wazuh-install.log")
-
-echo ""
-echo "Next steps:"
-echo "  1. Edit .env inside the container:"
-echo "     incus exec smartcity-services -- nano /home/ubuntu/smartcity/.env"
-echo "     -> WAZUH_HOST=$WZ_IP"
-echo "     -> WAZUH_PASS=$WAZUH_ADMIN_PASS"
-echo "  2. bash scripts/run_all.sh"
+echo "Next step: bash scripts/run_all.sh"
