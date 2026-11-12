@@ -4,15 +4,12 @@ set -e
 
 echo "=== Smart City SOA — Starting Services ==="
 
-# ── Start Wazuh container ────────────────────────────────────────────────────
+# ── Stop Wazuh before build (avoid noisy build logs filling alerts storage) ──
 if incus info wazuh &>/dev/null; then
     STATE=$(incus info wazuh | grep -oP 'Status: \K\w+')
-    if [ "$STATE" != "RUNNING" ]; then
-        echo "[*] Starting wazuh container..."
-        incus start wazuh
-        sleep 5
-    else
-        echo "[~] wazuh already running"
+    if [ "$STATE" = "RUNNING" ]; then
+        echo "[*] Stopping wazuh container during build..."
+        incus stop wazuh
     fi
 else
     echo "[!] wazuh container not found — run setup_incus.sh first"
@@ -25,6 +22,11 @@ incus exec smartcity-services -- bash -c "
     cd /home/ubuntu/smartcity
     docker compose up --build -d
 "
+
+# ── Start Wazuh after build ──────────────────────────────────────────────────
+echo "[*] Starting wazuh container..."
+incus start wazuh
+sleep 5
 
 SC_IP=$(incus list smartcity-services -f csv -c 4 2>/dev/null | grep eth0 | grep -oP '[\d.]+' | head -1 || echo "smartcity-services")
 
