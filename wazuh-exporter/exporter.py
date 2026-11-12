@@ -95,7 +95,9 @@ def poll_api():
 
     mgr = api_get("/manager/status")
     if mgr and mgr.get("data"):
-        for daemon, status in mgr["data"].get("daemons", {}).items():
+        items = mgr["data"].get("affected_items", [])
+        daemons = items[0] if items else mgr["data"].get("daemons", {})
+        for daemon, status in daemons.items():
             wazuh_manager_status.labels(daemon=daemon).set(1 if status == "running" else 0)
 
 
