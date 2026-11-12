@@ -6,6 +6,7 @@ touch /var/log/mail/mail.log
 chown spamd:spamd /var/run/spamd 2>/dev/null || true
 
 # Start rsyslog so Postfix can write to /var/log/mail/mail.log
+rm -f /run/rsyslogd.pid
 rsyslogd || true
 
 # Start SpamAssassin daemon
