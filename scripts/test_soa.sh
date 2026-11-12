@@ -10,8 +10,8 @@ TOKEN=$(grep "^INTERNAL_TOKEN=" "$PROJECT_DIR/.env" | cut -d= -f2)
 
 PASS=0; FAIL=0
 
-ok()   { echo "[PASS] $1"; ((PASS++)); }
-fail() { echo "[FAIL] $1"; ((FAIL++)); }
+ok()   { echo "[PASS] $1"; PASS=$((PASS+1)); }
+fail() { echo "[FAIL] $1"; FAIL=$((FAIL+1)); }
 
 check_http() {
     local label="$1" url="$2" expected="$3"
