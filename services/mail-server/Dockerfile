@@ -5,14 +5,10 @@ RUN apt-get update && apt-get install -y \
     postfix \
     spamassassin \
     spamc \
-    rsyslog \
     && rm -rf /var/lib/apt/lists/*
-
-RUN sed -i '/imklog/s/^/#/' /etc/rsyslog.conf
 
 COPY main.cf /etc/postfix/main.cf
 COPY master.cf /etc/postfix/master.cf
-RUN postfix upgrade-configuration 2>/dev/null || true
 COPY local.cf /etc/spamassassin/local.cf
 COPY start.sh /start.sh
 
