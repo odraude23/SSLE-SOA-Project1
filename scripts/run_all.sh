@@ -26,8 +26,7 @@ incus exec smartcity-services -- bash -c "
     docker compose up --build -d
 "
 
-SC_IP=$(incus info smartcity-services 2>/dev/null | grep -oP 'eth0.*?\K[\d.]+' | head -1 || \
-        incus info smartcity-services 2>/dev/null | grep -oP 'enp.*?\K[\d.]+' | head -1 || echo "smartcity-services")
+SC_IP=$(incus list smartcity-services -f csv -c 4 2>/dev/null | grep eth0 | grep -oP '[\d.]+' | head -1 || echo "smartcity-services")
 
 echo ""
 echo "=== All services running ==="

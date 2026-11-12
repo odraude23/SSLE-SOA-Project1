@@ -206,7 +206,7 @@ services:
     environment:
       WAZUH_HOST: ${WAZUH_HOST:-wazuh}
       WAZUH_PORT: "55000"
-      WAZUH_USER: wazuh
+      WAZUH_USER: ${WAZUH_USER:-wazuh}
       WAZUH_PASS: ${WAZUH_PASS:-wazuh}
       ALERTS_JSON: /wazuh-alerts/alerts.json
       EXPORTER_PORT: "9100"

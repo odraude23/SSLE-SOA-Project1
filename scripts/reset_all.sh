@@ -5,6 +5,7 @@ set -e
 
 PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 SHARED_LOGS="$HOME/smartcity-shared-logs"
+WAZUH_ALERTS="$HOME/wazuh-alerts-shared"
 
 echo "=== Smart City SOA — Full Reset ==="
 
@@ -46,9 +47,11 @@ echo "[*] Stopping Docker services and wiping volumes..."
 incus exec smartcity-services -- bash -c \
     "cd /home/ubuntu/smartcity && docker compose down -v" 2>/dev/null || true
 
-# ── Clear shared service logs ─────────────────────────────────────────────────
+# ── Clear shared service logs and wazuh alerts ───────────────────────────────
 echo "[*] Clearing shared service logs at $SHARED_LOGS"
 find "$SHARED_LOGS" -type f -delete 2>/dev/null || true
+echo "[*] Clearing Wazuh alerts files at $WAZUH_ALERTS"
+find "$WAZUH_ALERTS" -type f -delete 2>/dev/null || true
 
 # ── Stop wazuh container ──────────────────────────────────────────────────────
 echo "[*] Stopping wazuh container"

@@ -11,13 +11,15 @@ set -e
 
 PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 SHARED_LOGS="$HOME/smartcity-shared-logs"
+WAZUH_ALERTS="$HOME/wazuh-alerts-shared"
 
 echo "=== Smart City SOA — Incus Setup ==="
 echo "Project: $PROJECT_DIR"
 
-# ── Shared log directory on the Incus host ──────────────────────────────────
-echo "[*] Creating shared log directory at $SHARED_LOGS"
+# ── Shared directories on the Incus host ────────────────────────────────────
+echo "[*] Creating shared directories"
 mkdir -p "$SHARED_LOGS"
+mkdir -p "$WAZUH_ALERTS"
 
 # ── smartcity-services VM ───────────────────────────────────────────────────
 if incus info smartcity-services &>/dev/null; then
@@ -36,6 +38,9 @@ else
     incus config device add smartcity-services shared-logs disk \
         source="$SHARED_LOGS" \
         path=/home/ubuntu/smartcity/logs
+    incus config device add smartcity-services wazuh-alerts disk \
+        source="$WAZUH_ALERTS" \
+        path=/home/ubuntu/wazuh-alerts
 
     echo "[*] Installing Docker in VM"
     incus exec smartcity-services -- bash -c "
@@ -115,15 +120,19 @@ else:
     print('Already injected, skipping.')
 "
 
+    echo "[*] Mounting wazuh alerts directory to host (for wazuh-exporter)"
+    incus config device add wazuh wazuh-alerts disk \
+        source="$WAZUH_ALERTS" \
+        path=/var/ossec/logs/alerts
+
     incus exec wazuh -- systemctl restart wazuh-manager
     incus exec wazuh -- systemctl is-active wazuh-manager
 fi
 
 # ── Resolve IPs and Wazuh password ──────────────────────────────────────────
-SC_IP=$(incus info smartcity-services 2>/dev/null | grep -oP 'eth0.*?\K[\d.]+' | head -1 || \
-        incus info smartcity-services 2>/dev/null | grep -oP 'enp.*?\K[\d.]+' | head -1 || echo "pending")
-WZ_IP=$(incus info wazuh 2>/dev/null | grep -oP 'eth0.*?\K[\d.]+' | head -1 || \
-        incus info wazuh 2>/dev/null | grep -oP 'enp.*?\K[\d.]+' | head -1 || echo "pending")
+# smartcity-services has two IPs (eth0 + docker0) — filter for eth0 only
+SC_IP=$(incus list smartcity-services -f csv -c 4 2>/dev/null | grep eth0 | grep -oP '[\d.]+' | head -1 || echo "pending")
+WZ_IP=$(incus list wazuh -f csv -c 4 2>/dev/null | grep eth0 | grep -oP '[\d.]+' | head -1 || echo "pending")
 WAZUH_PASS=$(incus exec wazuh -- grep -A2 "^    User: wazuh$" /root/wazuh-install.log 2>/dev/null | grep "Password:" | awk '{print $2}')
 if [ -z "$WAZUH_PASS" ]; then
     WAZUH_PASS=$(incus exec wazuh -- grep -A2 "User: admin" /root/wazuh-install.log 2>/dev/null | grep "Password:" | awk '{print $2}')
@@ -139,6 +148,7 @@ cp "$PROJECT_DIR/.env.example" "$PROJECT_DIR/.env"
 sed -i "s|^INTERNAL_TOKEN=.*|INTERNAL_TOKEN=$INTERNAL_TOKEN|" "$PROJECT_DIR/.env"
 sed -i "s|^WAZUH_HOST=.*|WAZUH_HOST=$WZ_IP|" "$PROJECT_DIR/.env"
 sed -i "s|^WAZUH_PASS=.*|WAZUH_PASS=$WAZUH_PASS|" "$PROJECT_DIR/.env"
+sed -i "s|^WAZUH_ALERTS_PATH=.*|WAZUH_ALERTS_PATH=/home/ubuntu/wazuh-alerts|" "$PROJECT_DIR/.env"
 
 # ── Copy project files into smartcity-services ──────────────────────────────
 if incus info smartcity-services &>/dev/null && \

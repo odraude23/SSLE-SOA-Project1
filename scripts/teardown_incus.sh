@@ -14,12 +14,13 @@ for INSTANCE in smartcity-services wazuh; do
     fi
 done
 
-SHARED_LOGS="$HOME/smartcity-shared-logs"
-if [ -d "$SHARED_LOGS" ]; then
-    echo "[*] Removing shared logs at $SHARED_LOGS"
-    rm -rf "$SHARED_LOGS"
-else
-    echo "[~] $SHARED_LOGS not found, skipping"
-fi
+for DIR in "$HOME/smartcity-shared-logs" "$HOME/wazuh-alerts-shared"; do
+    if [ -d "$DIR" ]; then
+        echo "[*] Removing $DIR"
+        rm -rf "$DIR"
+    else
+        echo "[~] $DIR not found, skipping"
+    fi
+done
 
 echo "=== Teardown complete. Run: bash scripts/setup_incus.sh ==="
