@@ -375,7 +375,10 @@
       }],
       "transformations": [
         {"id": "labelsToFields", "options": {"mode": "columns"}},
-        {"id": "organize", "options": {"renameByName": {"daemon": "Daemon", "Value": "Status"}}}
+        {"id": "organize", "options": {
+          "excludeByName": {"Time": true, "__name__": true, "instance": true, "job": true},
+          "renameByName": {"daemon": "Daemon", "Value": "Status"}
+        }}
       ]
     },
     {
