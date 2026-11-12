@@ -351,7 +351,7 @@
     },
     {
       "id": 22, "type": "table", "title": "Wazuh Daemon Status",
-      "gridPos": {"h": 4, "w": 12, "x": 12, "y": 35},
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 35},
       "fieldConfig": {
         "defaults": {},
         "overrides": [
@@ -380,7 +380,7 @@
     },
     {
       "id": 23, "type": "timeseries", "title": "Alert Rate (per rule)",
-      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 39},
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 43},
       "fieldConfig": {
         "defaults": {"unit": "short", "custom": {"lineWidth": 2, "fillOpacity": 10}},
         "overrides": []
@@ -394,7 +394,7 @@
     },
     {
       "id": 24, "type": "timeseries", "title": "Alert Rate (per zone)",
-      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 39},
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 43},
       "fieldConfig": {
         "defaults": {"unit": "short", "custom": {"lineWidth": 2, "fillOpacity": 10}},
         "overrides": []
