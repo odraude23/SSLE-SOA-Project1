@@ -72,7 +72,7 @@ else:
 
 # ── Data flow ─────────────────────────────────────────────────────────────────
 print("\n--- Data flow ---")
-code, body = get("http://storage-service:5300/readings?limit=5", TOKEN)
+code, body = get("http://storage-service:5300/query?limit=5", TOKEN)
 try:
     d = json.loads(body)
     readings = d.get("readings", d) if isinstance(d, dict) else d

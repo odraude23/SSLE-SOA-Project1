@@ -12,7 +12,7 @@ readme_directory = no
 
 # Accept mail from any internal source (Docker network)
 mynetworks = 0.0.0.0/0
-smtpd_relay_restrictions = permit_mynetworks
+smtpd_relay_restrictions = permit_mynetworks defer_unauth_destination
 
 # Deliver to local mbox
 home_mailbox = Maildir/
