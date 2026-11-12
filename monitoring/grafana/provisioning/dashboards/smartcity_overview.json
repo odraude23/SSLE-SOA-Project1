@@ -374,10 +374,11 @@
         "legendFormat": "{{daemon}}"
       }],
       "transformations": [
+        {"id": "merge", "options": {}},
         {"id": "labelsToFields", "options": {"mode": "columns"}},
         {"id": "organize", "options": {
           "excludeByName": {"Time": true, "__name__": true, "instance": true, "job": true},
-          "renameByName": {"daemon": "Daemon", "Value": "Status"}
+          "renameByName": {"daemon": "Daemon", "wazuh_manager_status": "Status", "Value": "Status"}
         }}
       ]
     },
