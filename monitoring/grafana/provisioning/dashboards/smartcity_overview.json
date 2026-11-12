@@ -269,6 +269,142 @@
         {"id": "labelsToFields", "options": {"mode": "columns"}},
         {"id": "organize", "options": {"renameByName": {"job": "Service", "Value": "Status"}}}
       ]
+    },
+    {
+      "id": 18, "type": "row", "title": "Wazuh Security",
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 34}, "collapsed": false
+    },
+    {
+      "id": 19, "type": "stat", "title": "Wazuh API",
+      "gridPos": {"h": 4, "w": 4, "x": 0, "y": 35},
+      "options": {
+        "reduceOptions": {"calcs": ["lastNotNull"]},
+        "orientation": "auto",
+        "colorMode": "background",
+        "graphMode": "none",
+        "textMode": "auto"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            {"type": "value", "options": {"0": {"text": "DOWN", "color": "red"}, "1": {"text": "UP", "color": "green"}}}
+          ],
+          "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": 0}, {"color": "green", "value": 1}]},
+          "color": {"mode": "thresholds"}
+        },
+        "overrides": []
+      },
+      "targets": [{
+        "datasource": {"type": "prometheus", "uid": "prometheus-uid"},
+        "expr": "wazuh_up",
+        "instant": true,
+        "legendFormat": "Wazuh API"
+      }]
+    },
+    {
+      "id": 20, "type": "stat", "title": "Active Agents",
+      "gridPos": {"h": 4, "w": 4, "x": 4, "y": 35},
+      "options": {
+        "reduceOptions": {"calcs": ["lastNotNull"]},
+        "orientation": "auto",
+        "colorMode": "background",
+        "graphMode": "none",
+        "textMode": "auto"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {"mode": "absolute", "steps": [{"color": "blue", "value": 0}]},
+          "color": {"mode": "thresholds"}
+        },
+        "overrides": []
+      },
+      "targets": [{
+        "datasource": {"type": "prometheus", "uid": "prometheus-uid"},
+        "expr": "wazuh_agents_active",
+        "instant": true,
+        "legendFormat": "Active Agents"
+      }]
+    },
+    {
+      "id": 21, "type": "stat", "title": "Total Alerts",
+      "gridPos": {"h": 4, "w": 4, "x": 8, "y": 35},
+      "options": {
+        "reduceOptions": {"calcs": ["lastNotNull"]},
+        "orientation": "auto",
+        "colorMode": "background",
+        "graphMode": "none",
+        "textMode": "auto"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": 0}, {"color": "orange", "value": 1}, {"color": "red", "value": 10}]},
+          "color": {"mode": "thresholds"}
+        },
+        "overrides": []
+      },
+      "targets": [{
+        "datasource": {"type": "prometheus", "uid": "prometheus-uid"},
+        "expr": "sum(wazuh_alerts_total) or vector(0)",
+        "instant": true,
+        "legendFormat": "Total Alerts"
+      }]
+    },
+    {
+      "id": 22, "type": "table", "title": "Wazuh Daemon Status",
+      "gridPos": {"h": 4, "w": 12, "x": 12, "y": 35},
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": [
+          {
+            "matcher": {"id": "byName", "options": "Value"},
+            "properties": [
+              {"id": "mappings", "value": [
+                {"type": "value", "options": {"0": {"text": "stopped", "color": "red"}, "1": {"text": "running", "color": "green"}}}
+              ]},
+              {"id": "custom.displayMode", "value": "color-background"}
+            ]
+          }
+        ]
+      },
+      "options": {"sortBy": [{"displayName": "daemon"}]},
+      "targets": [{
+        "datasource": {"type": "prometheus", "uid": "prometheus-uid"},
+        "expr": "wazuh_manager_status",
+        "instant": true,
+        "legendFormat": "{{daemon}}"
+      }],
+      "transformations": [
+        {"id": "labelsToFields", "options": {"mode": "columns"}},
+        {"id": "organize", "options": {"renameByName": {"daemon": "Daemon", "Value": "Status"}}}
+      ]
+    },
+    {
+      "id": 23, "type": "timeseries", "title": "Alert Rate (per rule)",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 39},
+      "fieldConfig": {
+        "defaults": {"unit": "short", "custom": {"lineWidth": 2, "fillOpacity": 10}},
+        "overrides": []
+      },
+      "options": {"tooltip": {"mode": "multi"}},
+      "targets": [{
+        "datasource": {"type": "prometheus", "uid": "prometheus-uid"},
+        "expr": "rate(wazuh_alerts_total[5m])",
+        "legendFormat": "rule {{rule_id}} — {{description}}"
+      }]
+    },
+    {
+      "id": 24, "type": "timeseries", "title": "Alert Rate (per zone)",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 39},
+      "fieldConfig": {
+        "defaults": {"unit": "short", "custom": {"lineWidth": 2, "fillOpacity": 10}},
+        "overrides": []
+      },
+      "options": {"tooltip": {"mode": "multi"}},
+      "targets": [{
+        "datasource": {"type": "prometheus", "uid": "prometheus-uid"},
+        "expr": "sum by (zone) (rate(wazuh_alerts_total[5m]))",
+        "legendFormat": "{{zone}}"
+      }]
     }
   ]
 }
