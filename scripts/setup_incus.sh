@@ -20,6 +20,7 @@ echo "Project: $PROJECT_DIR"
 echo "[*] Creating shared directories"
 mkdir -p "$SHARED_LOGS"
 mkdir -p "$WAZUH_ALERTS"
+chmod 777 "$WAZUH_ALERTS"
 
 # ── smartcity-services VM ───────────────────────────────────────────────────
 if incus info smartcity-services &>/dev/null; then
@@ -133,12 +134,13 @@ fi
 # smartcity-services has two IPs (eth0 + docker0) — filter for eth0 only
 SC_IP=$(incus list smartcity-services -f csv -c 4 2>/dev/null | grep eth0 | grep -oP '[\d.]+' | head -1 || echo "pending")
 WZ_IP=$(incus list wazuh -f csv -c 4 2>/dev/null | grep eth0 | grep -oP '[\d.]+' | head -1 || echo "pending")
-WAZUH_PASS=$(incus exec wazuh -- grep -A2 "^    User: wazuh$" /root/wazuh-install.log 2>/dev/null | grep "Password:" | awk '{print $2}')
+WAZUH_PASS=$(incus exec wazuh -- bash -c "
+    cd /tmp && tar xf /root/wazuh-install-files.tar 2>/dev/null || true
+    grep -A1 'Password for wazuh API user' /tmp/wazuh-install-files/wazuh-passwords.txt \
+        | grep api_password | grep -oP \"'\\K[^']+\"
+" 2>/dev/null || echo "")
 if [ -z "$WAZUH_PASS" ]; then
-    WAZUH_PASS=$(incus exec wazuh -- grep -A2 "User: admin" /root/wazuh-install.log 2>/dev/null | grep "Password:" | awk '{print $2}')
-fi
-if [ -z "$WAZUH_PASS" ]; then
-    WAZUH_PASS="CHANGE_ME — check: incus exec wazuh -- cat /root/wazuh-install.log"
+    WAZUH_PASS="CHANGE_ME — check /tmp/wazuh-install-files/wazuh-passwords.txt inside wazuh container"
 fi
 
 # ── Generate .env from .env.example ─────────────────────────────────────────
