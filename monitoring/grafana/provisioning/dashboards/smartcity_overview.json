@@ -544,6 +544,80 @@
         {"id": "labelsToFields", "options": {"mode": "columns"}},
         {"id": "organize", "options": {"renameByName": {"rule_id": "Rule ID", "description": "Description", "Value": "Count"}}}
       ]
+    },
+    {
+      "id": 50, "type": "row", "title": "SOA Service Status",
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 90}, "collapsed": false
+    },
+    {
+      "id": 51, "type": "stat", "title": "service-registry",
+      "gridPos": {"h": 3, "w": 4, "x": 0, "y": 91},
+      "fieldConfig": {"defaults": {"mappings": [{"type": "value", "options": {"0": {"text": "DOWN", "color": "red"}, "1": {"text": "UP", "color": "green"}}}], "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": 0}, {"color": "green", "value": 1}]}, "color": {"mode": "thresholds"}}, "overrides": []},
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "colorMode": "background", "graphMode": "none", "textMode": "auto"},
+      "targets": [{"datasource": {"type": "prometheus", "uid": "prometheus-uid"}, "expr": "up{job=\"service-registry\"}", "instant": true, "legendFormat": ""}]
+    },
+    {
+      "id": 52, "type": "stat", "title": "ingestion-service",
+      "gridPos": {"h": 3, "w": 4, "x": 4, "y": 91},
+      "fieldConfig": {"defaults": {"mappings": [{"type": "value", "options": {"0": {"text": "DOWN", "color": "red"}, "1": {"text": "UP", "color": "green"}}}], "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": 0}, {"color": "green", "value": 1}]}, "color": {"mode": "thresholds"}}, "overrides": []},
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "colorMode": "background", "graphMode": "none", "textMode": "auto"},
+      "targets": [{"datasource": {"type": "prometheus", "uid": "prometheus-uid"}, "expr": "up{job=\"ingestion-service\"}", "instant": true, "legendFormat": ""}]
+    },
+    {
+      "id": 53, "type": "stat", "title": "storage-service",
+      "gridPos": {"h": 3, "w": 4, "x": 8, "y": 91},
+      "fieldConfig": {"defaults": {"mappings": [{"type": "value", "options": {"0": {"text": "DOWN", "color": "red"}, "1": {"text": "UP", "color": "green"}}}], "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": 0}, {"color": "green", "value": 1}]}, "color": {"mode": "thresholds"}}, "overrides": []},
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "colorMode": "background", "graphMode": "none", "textMode": "auto"},
+      "targets": [{"datasource": {"type": "prometheus", "uid": "prometheus-uid"}, "expr": "up{job=\"storage-service\"}", "instant": true, "legendFormat": ""}]
+    },
+    {
+      "id": 54, "type": "stat", "title": "analytics-service",
+      "gridPos": {"h": 3, "w": 4, "x": 12, "y": 91},
+      "fieldConfig": {"defaults": {"mappings": [{"type": "value", "options": {"0": {"text": "DOWN", "color": "red"}, "1": {"text": "UP", "color": "green"}}}], "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": 0}, {"color": "green", "value": 1}]}, "color": {"mode": "thresholds"}}, "overrides": []},
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "colorMode": "background", "graphMode": "none", "textMode": "auto"},
+      "targets": [{"datasource": {"type": "prometheus", "uid": "prometheus-uid"}, "expr": "up{job=\"analytics-service\"}", "instant": true, "legendFormat": ""}]
+    },
+    {
+      "id": 55, "type": "stat", "title": "alert-service",
+      "gridPos": {"h": 3, "w": 4, "x": 16, "y": 91},
+      "fieldConfig": {"defaults": {"mappings": [{"type": "value", "options": {"0": {"text": "DOWN", "color": "red"}, "1": {"text": "UP", "color": "green"}}}], "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": 0}, {"color": "green", "value": 1}]}, "color": {"mode": "thresholds"}}, "overrides": []},
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "colorMode": "background", "graphMode": "none", "textMode": "auto"},
+      "targets": [{"datasource": {"type": "prometheus", "uid": "prometheus-uid"}, "expr": "up{job=\"alert-service\"}", "instant": true, "legendFormat": ""}]
+    },
+    {
+      "id": 56, "type": "stat", "title": "ops-portal",
+      "gridPos": {"h": 3, "w": 4, "x": 20, "y": 91},
+      "fieldConfig": {"defaults": {"mappings": [{"type": "value", "options": {"0": {"text": "DOWN", "color": "red"}, "1": {"text": "UP", "color": "green"}}}], "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": 0}, {"color": "green", "value": 1}]}, "color": {"mode": "thresholds"}}, "overrides": []},
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "colorMode": "background", "graphMode": "none", "textMode": "auto"},
+      "targets": [{"datasource": {"type": "prometheus", "uid": "prometheus-uid"}, "expr": "up{job=\"ops-portal\"}", "instant": true, "legendFormat": ""}]
+    },
+    {
+      "id": 57, "type": "stat", "title": "zone-aggregator-north",
+      "gridPos": {"h": 3, "w": 6, "x": 0, "y": 94},
+      "fieldConfig": {"defaults": {"mappings": [{"type": "value", "options": {"0": {"text": "DOWN", "color": "red"}, "1": {"text": "UP", "color": "green"}}}], "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": 0}, {"color": "green", "value": 1}]}, "color": {"mode": "thresholds"}}, "overrides": []},
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "colorMode": "background", "graphMode": "none", "textMode": "auto"},
+      "targets": [{"datasource": {"type": "prometheus", "uid": "prometheus-uid"}, "expr": "up{job=\"zone-aggregator-north\"}", "instant": true, "legendFormat": ""}]
+    },
+    {
+      "id": 58, "type": "stat", "title": "zone-aggregator-center",
+      "gridPos": {"h": 3, "w": 6, "x": 6, "y": 94},
+      "fieldConfig": {"defaults": {"mappings": [{"type": "value", "options": {"0": {"text": "DOWN", "color": "red"}, "1": {"text": "UP", "color": "green"}}}], "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": 0}, {"color": "green", "value": 1}]}, "color": {"mode": "thresholds"}}, "overrides": []},
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "colorMode": "background", "graphMode": "none", "textMode": "auto"},
+      "targets": [{"datasource": {"type": "prometheus", "uid": "prometheus-uid"}, "expr": "up{job=\"zone-aggregator-center\"}", "instant": true, "legendFormat": ""}]
+    },
+    {
+      "id": 59, "type": "stat", "title": "zone-aggregator-south",
+      "gridPos": {"h": 3, "w": 6, "x": 12, "y": 94},
+      "fieldConfig": {"defaults": {"mappings": [{"type": "value", "options": {"0": {"text": "DOWN", "color": "red"}, "1": {"text": "UP", "color": "green"}}}], "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": 0}, {"color": "green", "value": 1}]}, "color": {"mode": "thresholds"}}, "overrides": []},
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "colorMode": "background", "graphMode": "none", "textMode": "auto"},
+      "targets": [{"datasource": {"type": "prometheus", "uid": "prometheus-uid"}, "expr": "up{job=\"zone-aggregator-south\"}", "instant": true, "legendFormat": ""}]
+    },
+    {
+      "id": 60, "type": "stat", "title": "wazuh-exporter",
+      "gridPos": {"h": 3, "w": 6, "x": 18, "y": 94},
+      "fieldConfig": {"defaults": {"mappings": [{"type": "value", "options": {"0": {"text": "DOWN", "color": "red"}, "1": {"text": "UP", "color": "green"}}}], "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": 0}, {"color": "green", "value": 1}]}, "color": {"mode": "thresholds"}}, "overrides": []},
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "colorMode": "background", "graphMode": "none", "textMode": "auto"},
+      "targets": [{"datasource": {"type": "prometheus", "uid": "prometheus-uid"}, "expr": "up{job=\"wazuh-exporter\"}", "instant": true, "legendFormat": ""}]
     }
   ]
 }
