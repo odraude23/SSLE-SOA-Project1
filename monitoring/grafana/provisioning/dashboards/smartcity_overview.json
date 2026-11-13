@@ -276,7 +276,7 @@
     },
     {
       "id": 19, "type": "stat", "title": "Wazuh API",
-      "gridPos": {"h": 4, "w": 4, "x": 0, "y": 35},
+      "gridPos": {"h": 4, "w": 8, "x": 0, "y": 35},
       "options": {
         "reduceOptions": {"calcs": ["lastNotNull"]},
         "orientation": "auto",
@@ -303,7 +303,7 @@
     },
     {
       "id": 20, "type": "stat", "title": "Active Agents",
-      "gridPos": {"h": 4, "w": 4, "x": 4, "y": 35},
+      "gridPos": {"h": 4, "w": 8, "x": 8, "y": 35},
       "options": {
         "reduceOptions": {"calcs": ["lastNotNull"]},
         "orientation": "auto",
@@ -327,7 +327,7 @@
     },
     {
       "id": 21, "type": "stat", "title": "Total Alerts",
-      "gridPos": {"h": 4, "w": 4, "x": 8, "y": 35},
+      "gridPos": {"h": 4, "w": 8, "x": 16, "y": 35},
       "options": {
         "reduceOptions": {"calcs": ["lastNotNull"]},
         "orientation": "auto",
@@ -350,41 +350,8 @@
       }]
     },
     {
-      "id": 22, "type": "table", "title": "Wazuh Daemon Status",
-      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 35},
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": [
-          {
-            "matcher": {"id": "byName", "options": "Value"},
-            "properties": [
-              {"id": "mappings", "value": [
-                {"type": "value", "options": {"0": {"text": "stopped", "color": "red"}, "1": {"text": "running", "color": "green"}}}
-              ]},
-              {"id": "custom.displayMode", "value": "color-background"}
-            ]
-          }
-        ]
-      },
-      "options": {"sortBy": [{"displayName": "daemon"}]},
-      "targets": [{
-        "datasource": {"type": "prometheus", "uid": "prometheus-uid"},
-        "expr": "wazuh_manager_status",
-        "instant": true,
-        "legendFormat": "{{daemon}}"
-      }],
-      "transformations": [
-        {"id": "merge", "options": {}},
-        {"id": "labelsToFields", "options": {"mode": "columns"}},
-        {"id": "organize", "options": {
-          "excludeByName": {"Time": true, "__name__": true, "instance": true, "job": true},
-          "renameByName": {"daemon": "Daemon", "wazuh_manager_status": "Status", "Value": "Status"}
-        }}
-      ]
-    },
-    {
       "id": 23, "type": "timeseries", "title": "Alert Rate (per rule)",
-      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 43},
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 39},
       "fieldConfig": {
         "defaults": {"unit": "short", "custom": {"lineWidth": 2, "fillOpacity": 10}},
         "overrides": []
@@ -398,7 +365,7 @@
     },
     {
       "id": 24, "type": "timeseries", "title": "Alert Rate (per zone)",
-      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 43},
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 39},
       "fieldConfig": {
         "defaults": {"unit": "short", "custom": {"lineWidth": 2, "fillOpacity": 10}},
         "overrides": []
