@@ -57,6 +57,15 @@ find "$SHARED_LOGS" -type f -delete 2>/dev/null || true
 echo "[*] Clearing Wazuh alerts files at $WAZUH_ALERTS"
 find "$WAZUH_ALERTS" -type f -delete 2>/dev/null || true
 
+# ── Clear operator mailbox ────────────────────────────────────────────────────
+MAILBOX="$PROJECT_DIR/mailbox/operator"
+if [ -f "$MAILBOX" ]; then
+    echo "[*] Clearing operator mailbox"
+    > "$MAILBOX"
+else
+    echo "[~] Operator mailbox not present — skipping"
+fi
+
 # ── Stop wazuh container ──────────────────────────────────────────────────────
 echo "[*] Stopping wazuh container"
 incus stop wazuh 2>/dev/null || true
