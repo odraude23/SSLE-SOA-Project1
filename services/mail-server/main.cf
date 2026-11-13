@@ -18,8 +18,8 @@ smtpd_relay_restrictions = permit_mynetworks defer_unauth_destination
 home_mailbox = Maildir/
 mailbox_command =
 
-# SpamAssassin content filter
-content_filter = spamassassin
+# SpamAssassin content filter — applied per-listener in master.cf, not globally
+content_filter =
 
 # Logging
 maillog_file = /var/log/mail/mail.log
