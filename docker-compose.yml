@@ -118,6 +118,7 @@ services:
       PORT: "5600"
     volumes:
       - ./logs/ops-portal:/var/log/ops-portal
+      - ./mailbox:/var/mail/smartcity.local:ro
     mem_limit: 256m
     depends_on: [analytics-service]
     restart: unless-stopped

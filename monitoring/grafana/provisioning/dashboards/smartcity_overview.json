@@ -1,7 +1,7 @@
 {
-  "title": "Smart City Overview",
+  "title": "Smart City — Monitoring & Security",
   "uid": "smartcity-overview",
-  "description": "Environmental monitoring — live sensor data per zone",
+  "description": "Environmental monitoring + threat detection — sensor data, service health, Wazuh alerts",
   "schemaVersion": 39,
   "version": 1,
   "refresh": "10s",
@@ -376,6 +376,174 @@
         "expr": "sum by (zone) (rate(wazuh_alerts_total[5m]))",
         "legendFormat": "{{zone}}"
       }]
+    },
+    {
+      "id": 30, "type": "row", "title": "Threat Counters",
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 48}, "collapsed": false
+    },
+    {
+      "id": 31, "type": "stat", "title": "DDoS Alerts",
+      "gridPos": {"h": 4, "w": 6, "x": 0, "y": 49},
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "orange", "value": 1}, {"color": "red", "value": 10}]},
+          "color": {"mode": "thresholds"},
+          "mappings": [{"type": "value", "options": {"0": {"text": "0", "color": "green"}}}]
+        }, "overrides": []
+      },
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "colorMode": "background", "graphMode": "none", "textMode": "auto"},
+      "targets": [{"datasource": {"type": "prometheus", "uid": "prometheus-uid"}, "expr": "sum(wazuh_alerts_total{rule_id=~\"1001.*\"}) or vector(0)", "instant": true, "legendFormat": "DDoS"}]
+    },
+    {
+      "id": 32, "type": "stat", "title": "APT Alerts",
+      "gridPos": {"h": 4, "w": 6, "x": 6, "y": 49},
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "orange", "value": 1}, {"color": "red", "value": 5}]},
+          "color": {"mode": "thresholds"},
+          "mappings": [{"type": "value", "options": {"0": {"text": "0", "color": "green"}}}]
+        }, "overrides": []
+      },
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "colorMode": "background", "graphMode": "none", "textMode": "auto"},
+      "targets": [{"datasource": {"type": "prometheus", "uid": "prometheus-uid"}, "expr": "sum(wazuh_alerts_total{rule_id=~\"1002.*\"}) or vector(0)", "instant": true, "legendFormat": "APT"}]
+    },
+    {
+      "id": 33, "type": "stat", "title": "Spam Alerts",
+      "gridPos": {"h": 4, "w": 6, "x": 12, "y": 49},
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "orange", "value": 1}, {"color": "red", "value": 20}]},
+          "color": {"mode": "thresholds"},
+          "mappings": [{"type": "value", "options": {"0": {"text": "0", "color": "green"}}}]
+        }, "overrides": []
+      },
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "colorMode": "background", "graphMode": "none", "textMode": "auto"},
+      "targets": [{"datasource": {"type": "prometheus", "uid": "prometheus-uid"}, "expr": "sum(wazuh_alerts_total{rule_id=~\"1003.*\"}) or vector(0)", "instant": true, "legendFormat": "Spam"}]
+    },
+    {
+      "id": 34, "type": "stat", "title": "Alert Emails Sent",
+      "gridPos": {"h": 4, "w": 6, "x": 18, "y": 49},
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 5}, {"color": "red", "value": 15}]},
+          "color": {"mode": "thresholds"}
+        }, "overrides": []
+      },
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "colorMode": "background", "graphMode": "none"},
+      "targets": [{"datasource": {"type": "prometheus", "uid": "prometheus-uid"}, "expr": "sum(alert_emails_total) or vector(0)", "instant": true, "legendFormat": ""}]
+    },
+    {
+      "id": 35, "type": "row", "title": "Threat 1 — DDoS Detection",
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 53}, "collapsed": false
+    },
+    {
+      "id": 36, "type": "timeseries", "title": "Ops Portal — Request Rate / 10s  (threshold: 50 req/s)",
+      "gridPos": {"h": 8, "w": 24, "x": 0, "y": 54},
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "custom": {"lineInterpolation": "smooth"},
+          "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "red", "value": 50}]}
+        }, "overrides": []
+      },
+      "options": {
+        "tooltip": {"mode": "single"},
+        "legend": {"displayMode": "list", "placement": "bottom"},
+        "thresholds": {"mode": "line", "show": true}
+      },
+      "targets": [{
+        "datasource": {"type": "prometheus", "uid": "prometheus-uid"},
+        "expr": "sum(rate(http_requests_total{job=\"ops-portal\"}[10s]))",
+        "legendFormat": "ops-portal req/s"
+      }]
+    },
+    {
+      "id": 37, "type": "row", "title": "Threat 2 — APT / Honeypot",
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 62}, "collapsed": false
+    },
+    {
+      "id": 38, "type": "timeseries", "title": "Honeypot Hits — /api/admin/* (rule 100200/100201)",
+      "gridPos": {"h": 8, "w": 24, "x": 0, "y": 63},
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": {"lineInterpolation": "stepAfter"},
+          "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "orange", "value": 1}, {"color": "red", "value": 3}]}
+        }, "overrides": []
+      },
+      "options": {"tooltip": {"mode": "multi"}, "legend": {"displayMode": "list", "placement": "bottom"}},
+      "targets": [
+        {
+          "datasource": {"type": "prometheus", "uid": "prometheus-uid"},
+          "expr": "increase(wazuh_alerts_total{rule_id=\"100200\"}[5m])",
+          "legendFormat": "Honeypot hit (100200)"
+        },
+        {
+          "datasource": {"type": "prometheus", "uid": "prometheus-uid"},
+          "expr": "increase(wazuh_alerts_total{rule_id=\"100201\"}[5m])",
+          "legendFormat": "APT confirmed (100201)"
+        }
+      ]
+    },
+    {
+      "id": 39, "type": "row", "title": "Threat 3 — Email Spam / Alert Flood",
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 71}, "collapsed": false
+    },
+    {
+      "id": 40, "type": "timeseries", "title": "Alert Email Rate (threshold: 10/min)",
+      "gridPos": {"h": 8, "w": 24, "x": 0, "y": 72},
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": {"lineInterpolation": "smooth"},
+          "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 5}, {"color": "red", "value": 10}]}
+        }, "overrides": []
+      },
+      "options": {
+        "tooltip": {"mode": "multi"},
+        "legend": {"displayMode": "list", "placement": "bottom"},
+        "thresholds": {"mode": "line", "show": true}
+      },
+      "targets": [
+        {
+          "datasource": {"type": "prometheus", "uid": "prometheus-uid"},
+          "expr": "sum(increase(alert_emails_total[1m])) by (zone)",
+          "legendFormat": "zone={{zone}}"
+        },
+        {
+          "datasource": {"type": "prometheus", "uid": "prometheus-uid"},
+          "expr": "increase(wazuh_alerts_total{rule_id=\"100301\"}[1m])",
+          "legendFormat": "Wazuh flood rule 100301"
+        }
+      ]
+    },
+    {
+      "id": 41, "type": "row", "title": "Wazuh Alerts — All Rules",
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 80}, "collapsed": false
+    },
+    {
+      "id": 42, "type": "table", "title": "Wazuh Alerts by Rule ID",
+      "gridPos": {"h": 8, "w": 24, "x": 0, "y": 81},
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": [
+          {
+            "matcher": {"id": "byName", "options": "Value"},
+            "properties": [{"id": "custom.displayMode", "value": "lcd-gauge"}, {"id": "color", "value": {"mode": "continuous-RdYlGr"}}]
+          }
+        ]
+      },
+      "options": {"sortBy": [{"displayName": "Value", "desc": true}]},
+      "targets": [{
+        "datasource": {"type": "prometheus", "uid": "prometheus-uid"},
+        "expr": "sort_desc(sum(wazuh_alerts_total) by (rule_id, description))",
+        "instant": true,
+        "legendFormat": "{{rule_id}} {{description}}"
+      }],
+      "transformations": [
+        {"id": "labelsToFields", "options": {"mode": "columns"}},
+        {"id": "organize", "options": {"renameByName": {"rule_id": "Rule ID", "description": "Description", "Value": "Count"}}}
+      ]
     }
   ]
 }
