@@ -533,16 +533,19 @@
           }
         ]
       },
-      "options": {"sortBy": [{"displayName": "Value", "desc": true}]},
+      "options": {"sortBy": [{"displayName": "Count", "desc": true}]},
       "targets": [{
         "datasource": {"type": "prometheus", "uid": "prometheus-uid"},
-        "expr": "sort_desc(sum(wazuh_alerts_total) by (rule_id, description))",
+        "expr": "sum(wazuh_alerts_total) by (rule_id, description)",
         "instant": true,
-        "legendFormat": "{{rule_id}} {{description}}"
+        "format": "table",
+        "legendFormat": ""
       }],
       "transformations": [
-        {"id": "labelsToFields", "options": {"mode": "columns"}},
-        {"id": "organize", "options": {"renameByName": {"rule_id": "Rule ID", "description": "Description", "Value": "Count"}}}
+        {"id": "organize", "options": {
+          "excludeByName": {"Time": true},
+          "renameByName": {"rule_id": "Rule ID", "description": "Description", "Value": "Count"}
+        }}
       ]
     },
     {
