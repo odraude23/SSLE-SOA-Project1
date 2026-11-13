@@ -112,7 +112,11 @@ def read_mailbox():
         return messages
     try:
         mbox = mailbox.mbox(MBOX_PATH, create=False)
-        mbox.lock()
+        try:
+            mbox.lock()
+            locked = True
+        except Exception:
+            locked = False
         try:
             for i, msg in enumerate(mbox):
                 subject = _decode_header(msg.get("Subject", "(no subject)"))
@@ -132,7 +136,8 @@ def read_mailbox():
                     "body": body,
                 })
         finally:
-            mbox.unlock()
+            if locked:
+                mbox.unlock()
     except Exception as e:
         messages.append({"id": -1, "subject": f"Error reading mailbox: {e}", "from": "", "date": "", "preview": "", "body": ""})
     messages.reverse()
