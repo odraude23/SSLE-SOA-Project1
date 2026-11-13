@@ -10,12 +10,88 @@
   "tags": ["smartcity", "security"],
   "panels": [
     {
-      "id": 1, "type": "row", "title": "Wazuh Status",
+      "id": 17, "type": "row", "title": "SOA Services",
       "gridPos": {"h": 1, "w": 24, "x": 0, "y": 0}, "collapsed": false
     },
     {
+      "id": 18, "type": "stat", "title": "service-registry",
+      "gridPos": {"h": 3, "w": 4, "x": 0, "y": 1},
+      "fieldConfig": {"defaults": {"mappings": [{"type": "value", "options": {"0": {"text": "DOWN", "color": "red"}, "1": {"text": "UP", "color": "green"}}}], "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": 0}, {"color": "green", "value": 1}]}, "color": {"mode": "thresholds"}}, "overrides": []},
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "colorMode": "background", "graphMode": "none", "textMode": "auto"},
+      "targets": [{"datasource": {"type": "prometheus", "uid": "prometheus-uid"}, "expr": "up{job=\"service-registry\"}", "instant": true, "legendFormat": ""}]
+    },
+    {
+      "id": 19, "type": "stat", "title": "ingestion-service",
+      "gridPos": {"h": 3, "w": 4, "x": 4, "y": 1},
+      "fieldConfig": {"defaults": {"mappings": [{"type": "value", "options": {"0": {"text": "DOWN", "color": "red"}, "1": {"text": "UP", "color": "green"}}}], "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": 0}, {"color": "green", "value": 1}]}, "color": {"mode": "thresholds"}}, "overrides": []},
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "colorMode": "background", "graphMode": "none", "textMode": "auto"},
+      "targets": [{"datasource": {"type": "prometheus", "uid": "prometheus-uid"}, "expr": "up{job=\"ingestion-service\"}", "instant": true, "legendFormat": ""}]
+    },
+    {
+      "id": 20, "type": "stat", "title": "storage-service",
+      "gridPos": {"h": 3, "w": 4, "x": 8, "y": 1},
+      "fieldConfig": {"defaults": {"mappings": [{"type": "value", "options": {"0": {"text": "DOWN", "color": "red"}, "1": {"text": "UP", "color": "green"}}}], "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": 0}, {"color": "green", "value": 1}]}, "color": {"mode": "thresholds"}}, "overrides": []},
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "colorMode": "background", "graphMode": "none", "textMode": "auto"},
+      "targets": [{"datasource": {"type": "prometheus", "uid": "prometheus-uid"}, "expr": "up{job=\"storage-service\"}", "instant": true, "legendFormat": ""}]
+    },
+    {
+      "id": 21, "type": "stat", "title": "analytics-service",
+      "gridPos": {"h": 3, "w": 4, "x": 12, "y": 1},
+      "fieldConfig": {"defaults": {"mappings": [{"type": "value", "options": {"0": {"text": "DOWN", "color": "red"}, "1": {"text": "UP", "color": "green"}}}], "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": 0}, {"color": "green", "value": 1}]}, "color": {"mode": "thresholds"}}, "overrides": []},
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "colorMode": "background", "graphMode": "none", "textMode": "auto"},
+      "targets": [{"datasource": {"type": "prometheus", "uid": "prometheus-uid"}, "expr": "up{job=\"analytics-service\"}", "instant": true, "legendFormat": ""}]
+    },
+    {
+      "id": 22, "type": "stat", "title": "alert-service",
+      "gridPos": {"h": 3, "w": 4, "x": 16, "y": 1},
+      "fieldConfig": {"defaults": {"mappings": [{"type": "value", "options": {"0": {"text": "DOWN", "color": "red"}, "1": {"text": "UP", "color": "green"}}}], "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": 0}, {"color": "green", "value": 1}]}, "color": {"mode": "thresholds"}}, "overrides": []},
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "colorMode": "background", "graphMode": "none", "textMode": "auto"},
+      "targets": [{"datasource": {"type": "prometheus", "uid": "prometheus-uid"}, "expr": "up{job=\"alert-service\"}", "instant": true, "legendFormat": ""}]
+    },
+    {
+      "id": 23, "type": "stat", "title": "ops-portal",
+      "gridPos": {"h": 3, "w": 4, "x": 20, "y": 1},
+      "fieldConfig": {"defaults": {"mappings": [{"type": "value", "options": {"0": {"text": "DOWN", "color": "red"}, "1": {"text": "UP", "color": "green"}}}], "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": 0}, {"color": "green", "value": 1}]}, "color": {"mode": "thresholds"}}, "overrides": []},
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "colorMode": "background", "graphMode": "none", "textMode": "auto"},
+      "targets": [{"datasource": {"type": "prometheus", "uid": "prometheus-uid"}, "expr": "up{job=\"ops-portal\"}", "instant": true, "legendFormat": ""}]
+    },
+    {
+      "id": 24, "type": "stat", "title": "zone-aggregator-north",
+      "gridPos": {"h": 3, "w": 6, "x": 0, "y": 4},
+      "fieldConfig": {"defaults": {"mappings": [{"type": "value", "options": {"0": {"text": "DOWN", "color": "red"}, "1": {"text": "UP", "color": "green"}}}], "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": 0}, {"color": "green", "value": 1}]}, "color": {"mode": "thresholds"}}, "overrides": []},
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "colorMode": "background", "graphMode": "none", "textMode": "auto"},
+      "targets": [{"datasource": {"type": "prometheus", "uid": "prometheus-uid"}, "expr": "up{job=\"zone-aggregator-north\"}", "instant": true, "legendFormat": ""}]
+    },
+    {
+      "id": 25, "type": "stat", "title": "zone-aggregator-center",
+      "gridPos": {"h": 3, "w": 6, "x": 6, "y": 4},
+      "fieldConfig": {"defaults": {"mappings": [{"type": "value", "options": {"0": {"text": "DOWN", "color": "red"}, "1": {"text": "UP", "color": "green"}}}], "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": 0}, {"color": "green", "value": 1}]}, "color": {"mode": "thresholds"}}, "overrides": []},
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "colorMode": "background", "graphMode": "none", "textMode": "auto"},
+      "targets": [{"datasource": {"type": "prometheus", "uid": "prometheus-uid"}, "expr": "up{job=\"zone-aggregator-center\"}", "instant": true, "legendFormat": ""}]
+    },
+    {
+      "id": 26, "type": "stat", "title": "zone-aggregator-south",
+      "gridPos": {"h": 3, "w": 6, "x": 12, "y": 4},
+      "fieldConfig": {"defaults": {"mappings": [{"type": "value", "options": {"0": {"text": "DOWN", "color": "red"}, "1": {"text": "UP", "color": "green"}}}], "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": 0}, {"color": "green", "value": 1}]}, "color": {"mode": "thresholds"}}, "overrides": []},
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "colorMode": "background", "graphMode": "none", "textMode": "auto"},
+      "targets": [{"datasource": {"type": "prometheus", "uid": "prometheus-uid"}, "expr": "up{job=\"zone-aggregator-south\"}", "instant": true, "legendFormat": ""}]
+    },
+    {
+    {
+    {
+      "id": 27, "type": "stat", "title": "wazuh-exporter",
+      "gridPos": {"h": 3, "w": 6, "x": 18, "y": 4},
+      "fieldConfig": {"defaults": {"mappings": [{"type": "value", "options": {"0": {"text": "DOWN", "color": "red"}, "1": {"text": "UP", "color": "green"}}}], "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": 0}, {"color": "green", "value": 1}]}, "color": {"mode": "thresholds"}}, "overrides": []},
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "colorMode": "background", "graphMode": "none", "textMode": "auto"},
+      "targets": [{"datasource": {"type": "prometheus", "uid": "prometheus-uid"}, "expr": "up{job=\"wazuh-exporter\"}", "instant": true, "legendFormat": ""}]
+    },
+    {
+      "id": 1, "type": "row", "title": "Wazuh Status",
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 7}, "collapsed": false
+    },
+    {
       "id": 2, "type": "stat", "title": "Wazuh SIEM",
-      "gridPos": {"h": 4, "w": 4, "x": 0, "y": 1},
+      "gridPos": {"h": 4, "w": 4, "x": 0, "y": 8},
       "fieldConfig": {
         "defaults": {
           "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": null}, {"color": "green", "value": 1}]},
@@ -28,7 +104,7 @@
     },
     {
       "id": 3, "type": "stat", "title": "Active Agents",
-      "gridPos": {"h": 4, "w": 4, "x": 4, "y": 1},
+      "gridPos": {"h": 4, "w": 4, "x": 4, "y": 8},
       "fieldConfig": {
         "defaults": {
           "thresholds": {"mode": "absolute", "steps": [{"color": "yellow", "value": null}, {"color": "green", "value": 1}]},
@@ -40,7 +116,7 @@
     },
     {
       "id": 4, "type": "stat", "title": "Total Alerts (all time)",
-      "gridPos": {"h": 4, "w": 4, "x": 8, "y": 1},
+      "gridPos": {"h": 4, "w": 4, "x": 8, "y": 8},
       "fieldConfig": {
         "defaults": {
           "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 10}, {"color": "red", "value": 50}]},
@@ -48,11 +124,11 @@
         }
       },
       "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "colorMode": "background", "graphMode": "none"},
-      "targets": [{"datasource": {"type": "prometheus", "uid": "prometheus-uid"}, "expr": "sum(wazuh_alerts_total)", "instant": true, "legendFormat": ""}]
+      "targets": [{"datasource": {"type": "prometheus", "uid": "prometheus-uid"}, "expr": "sum(wazuh_alerts_total{rule_id=~\"100[0-9]+.*\"}) or vector(0)", "instant": true, "legendFormat": ""}]
     },
     {
       "id": 5, "type": "stat", "title": "Alert Emails Sent",
-      "gridPos": {"h": 4, "w": 4, "x": 12, "y": 1},
+      "gridPos": {"h": 4, "w": 4, "x": 12, "y": 8},
       "fieldConfig": {
         "defaults": {
           "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 5}, {"color": "red", "value": 15}]},
@@ -63,12 +139,51 @@
       "targets": [{"datasource": {"type": "prometheus", "uid": "prometheus-uid"}, "expr": "sum(alert_emails_total)", "instant": true, "legendFormat": ""}]
     },
     {
+      "id": 14, "type": "stat", "title": "DDoS Alerts",
+      "gridPos": {"h": 4, "w": 8, "x": 0, "y": 12},
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "orange", "value": 1}, {"color": "red", "value": 10}]},
+          "color": {"mode": "thresholds"},
+          "mappings": [{"type": "value", "options": {"0": {"text": "0", "color": "green"}}}]
+        }
+      },
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "colorMode": "background", "graphMode": "none", "textMode": "auto"},
+      "targets": [{"datasource": {"type": "prometheus", "uid": "prometheus-uid"}, "expr": "sum(wazuh_alerts_total{rule_id=~\"1001.*\"}) or vector(0)", "instant": true, "legendFormat": "DDoS"}]
+    },
+    {
+      "id": 15, "type": "stat", "title": "APT Alerts",
+      "gridPos": {"h": 4, "w": 8, "x": 8, "y": 12},
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "orange", "value": 1}, {"color": "red", "value": 5}]},
+          "color": {"mode": "thresholds"},
+          "mappings": [{"type": "value", "options": {"0": {"text": "0", "color": "green"}}}]
+        }
+      },
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "colorMode": "background", "graphMode": "none", "textMode": "auto"},
+      "targets": [{"datasource": {"type": "prometheus", "uid": "prometheus-uid"}, "expr": "sum(wazuh_alerts_total{rule_id=~\"1002.*\"}) or vector(0)", "instant": true, "legendFormat": "APT"}]
+    },
+    {
+      "id": 16, "type": "stat", "title": "Spam Alerts",
+      "gridPos": {"h": 4, "w": 8, "x": 16, "y": 12},
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "orange", "value": 1}, {"color": "red", "value": 20}]},
+          "color": {"mode": "thresholds"},
+          "mappings": [{"type": "value", "options": {"0": {"text": "0", "color": "green"}}}]
+        }
+      },
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "colorMode": "background", "graphMode": "none", "textMode": "auto"},
+      "targets": [{"datasource": {"type": "prometheus", "uid": "prometheus-uid"}, "expr": "sum(wazuh_alerts_total{rule_id=~\"1003.*\"}) or vector(0)", "instant": true, "legendFormat": "Spam"}]
+    },
+    {
       "id": 6, "type": "row", "title": "Threat 1 — DDoS Detection",
-      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 5}, "collapsed": false
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 9}, "collapsed": false
     },
     {
       "id": 7, "type": "timeseries", "title": "Ops Portal — Request Rate / 10s  (threshold: 50)",
-      "gridPos": {"h": 8, "w": 24, "x": 0, "y": 6},
+      "gridPos": {"h": 8, "w": 24, "x": 0, "y": 10},
       "fieldConfig": {
         "defaults": {
           "unit": "reqps",
@@ -91,11 +206,11 @@
     },
     {
       "id": 8, "type": "row", "title": "Threat 2 — APT / Honeypot",
-      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 14}, "collapsed": false
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 18}, "collapsed": false
     },
     {
       "id": 9, "type": "timeseries", "title": "Honeypot Hits — /api/admin/* (rule 100200/100201)",
-      "gridPos": {"h": 8, "w": 24, "x": 0, "y": 15},
+      "gridPos": {"h": 8, "w": 24, "x": 0, "y": 19},
       "fieldConfig": {
         "defaults": {
           "unit": "short",
@@ -119,11 +234,11 @@
     },
     {
       "id": 10, "type": "row", "title": "Threat 3 — Email Spam / Alert Flood",
-      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 23}, "collapsed": false
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 27}, "collapsed": false
     },
     {
       "id": 11, "type": "timeseries", "title": "Alert Email Rate (threshold: 10/min)",
-      "gridPos": {"h": 8, "w": 24, "x": 0, "y": 24},
+      "gridPos": {"h": 8, "w": 24, "x": 0, "y": 28},
       "fieldConfig": {
         "defaults": {
           "unit": "short",
@@ -151,11 +266,11 @@
     },
     {
       "id": 12, "type": "row", "title": "Wazuh Alerts — All Rules",
-      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 32}, "collapsed": false
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 36}, "collapsed": false
     },
     {
       "id": 13, "type": "table", "title": "Wazuh Alerts by Rule ID",
-      "gridPos": {"h": 8, "w": 24, "x": 0, "y": 33},
+      "gridPos": {"h": 8, "w": 24, "x": 0, "y": 37},
       "fieldConfig": {
         "defaults": {},
         "overrides": [
