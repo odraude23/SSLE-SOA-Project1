@@ -217,6 +217,9 @@ if incus info smartcity-services &>/dev/null && \
             -exec chown ubuntu:ubuntu {} +
     "
     incus file push "$PROJECT_DIR/.env" smartcity-services/home/ubuntu/smartcity/.env
+    # Postfix inside the mail-server container writes as the 'postfix' user.
+    # The mailbox directory must be world-writable so it can create the operator mailbox.
+    incus exec smartcity-services -- chmod 777 /home/ubuntu/smartcity/mailbox
 fi
 
 # ── Print summary ────────────────────────────────────────────────────────────

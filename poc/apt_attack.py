@@ -26,13 +26,16 @@ TOKEN_FILE = "/tmp/sc_extracted_token.txt"
 
 
 def _incus_ip(container="smartcity-services"):
-    """Return the IPv4 of an Incus container, or None if not found."""
+    """Return the eth0 IPv4 of an Incus container, or None if not found."""
     try:
         out = subprocess.check_output(
             ["incus", "list", container, "-f", "csv", "-c", "4"],
             stderr=subprocess.DEVNULL, text=True,
         ).strip()
-        return out.splitlines()[0].split()[0]
+        for line in out.splitlines():
+            if "eth0" in line:
+                return line.split()[0]
+        return None
     except Exception:
         return None
 
