@@ -16,6 +16,20 @@ WAZUH_ALERTS="$HOME/wazuh-alerts-shared"
 echo "=== Smart City SOA — Incus Setup ==="
 echo "Project: $PROJECT_DIR"
 
+# ── Host kernel prerequisites ────────────────────────────────────────────────
+# br_netfilter is required for Docker to run with userland-proxy:false.
+# It must be loaded on the Incus host (this machine), not inside the container.
+echo "[*] Loading br_netfilter kernel module"
+if ! lsmod | grep -q br_netfilter; then
+    sudo modprobe br_netfilter
+fi
+sudo sysctl -qw net.bridge.bridge-nf-call-iptables=1
+sudo sysctl -qw net.bridge.bridge-nf-call-ip6tables=1
+# Persist across reboots
+echo 'br_netfilter' | sudo tee /etc/modules-load.d/br_netfilter.conf > /dev/null
+printf 'net.bridge.bridge-nf-call-iptables=1\nnet.bridge.bridge-nf-call-ip6tables=1\n' \
+    | sudo tee /etc/sysctl.d/99-br-netfilter.conf > /dev/null
+
 # ── Shared directories on the Incus host ────────────────────────────────────
 echo "[*] Creating shared directories"
 mkdir -p "$SHARED_LOGS"/{registry,ingestion,storage,analytics,ops-portal,alert-service,zone-aggregator-north,zone-aggregator-center,zone-aggregator-south,mail,threat-blocker}
