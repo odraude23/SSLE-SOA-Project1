@@ -56,13 +56,13 @@ else
             https://download.docker.com/linux/ubuntu \$(lsb_release -cs) stable\" \
             | tee /etc/apt/sources.list.d/docker.list
         apt-get update -q
+        # Write daemon.json BEFORE installing Docker so it starts with this config.
+        # userland-proxy:false makes containers see the real source IP for published ports
+        # instead of 172.17.0.1 (the Docker bridge gateway from the userland proxy).
+        mkdir -p /etc/docker
+        printf '{\"userland-proxy\": false}\n' > /etc/docker/daemon.json
         apt-get install -y -q docker-ce docker-ce-cli containerd.io docker-compose-plugin
         usermod -aG docker ubuntu
-        # Disable userland proxy so containers see the real source IP for published ports.
-        # Without this, docker-proxy rewrites all external connections to 172.17.0.1,
-        # making per-IP blocking in DOCKER-USER ineffective.
-        echo '{\"userland-proxy\": false}' > /etc/docker/daemon.json
-        systemctl restart docker
     "
 
 fi
