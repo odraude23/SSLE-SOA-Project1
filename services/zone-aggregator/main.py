@@ -29,6 +29,14 @@ ZONE_COORDS = {
     "south":  {"lat": 40.61, "lon": -8.67, "description": "Southern district"},
 }
 
+# Phase offsets (120° apart) so each zone sits at a different point in its cycle.
+# North peaks first, Center 20 min later, South 20 min after that (for the 1h AQI cycle).
+ZONE_PHASE = {
+    "north":  0.0,
+    "center": 2 * math.pi / 3,
+    "south":  4 * math.pi / 3,
+}
+
 LOG_DIR = f"/var/log/zone-aggregator-{ZONE}"
 os.makedirs(LOG_DIR, exist_ok=True)
 
@@ -135,9 +143,12 @@ def heartbeat_loop():
 
 def _simulate_reading(sensor_id: int, ts: float) -> dict:
     t = ts
-    aqi = max(0, min(500, 60 + 30 * math.sin(t / 3600) + random.gauss(0, 5)))
-    temp = 18 + 8 * math.sin(t / 86400 * 2 * math.pi) + random.gauss(0, 1)
-    noise = max(30, min(120, 55 + 15 * math.sin(t / 7200) + random.gauss(0, 3)))
+    phase = ZONE_PHASE.get(ZONE, 0.0)
+    # small per-sensor nudge so the 3 sensors in a zone don't read identically
+    s = (sensor_id - 1) * 0.15
+    aqi = max(0, min(500, 60 + 30 * math.sin(t / 3600 + phase + s) + random.gauss(0, 5)))
+    temp = 18 + 8 * math.sin(t / 86400 * 2 * math.pi + phase + s) + random.gauss(0, 1)
+    noise = max(30, min(120, 55 + 15 * math.sin(t / 7200 + phase + s) + random.gauss(0, 3)))
     return {
         "sensor_id": sensor_id,
         "aqi": round(aqi, 1),
