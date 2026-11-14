@@ -155,12 +155,34 @@ fi
 SC_IP=$(incus list smartcity-services -f csv -c 4 2>/dev/null | grep eth0 | grep -oP '[\d.]+' | head -1 || echo "pending")
 WZ_IP=$(incus list wazuh -f csv -c 4 2>/dev/null | grep eth0 | grep -oP '[\d.]+' | head -1 || echo "pending")
 WAZUH_PASS=$(incus exec wazuh -- bash -c "
-    cd /tmp && tar xf /root/wazuh-install-files.tar 2>/dev/null || true
-    grep -A1 'Password for wazuh API user' /tmp/wazuh-install-files/wazuh-passwords.txt \
-        | grep api_password | grep -oP \"'\\K[^']+\"
+    # Extract the passwords archive if not already done
+    [ -d /tmp/wazuh-install-files ] || \
+        tar xf /root/wazuh-install-files.tar -C /tmp 2>/dev/null || true
+    python3 - <<'PYEOF'
+import re, sys
+try:
+    txt = open('/tmp/wazuh-install-files/wazuh-passwords.txt').read()
+except FileNotFoundError:
+    sys.exit(1)
+# Format 1 (Wazuh 4.7+): username: 'wazuh'\n  password: 'PASS'
+m = re.search(r\"username:\\s*'wazuh'[^\\n]*\\n\\s*password:\\s*'([^']+)'\", txt)
+if not m:
+    # Format 2: The password for user wazuh is 'PASS' or \"PASS\"
+    m = re.search(r\"user(?:name)?[: ]+['\\\"]?wazuh['\\\"]?[^\\n]*\\n.*?password[: ]+['\\\"]([^'\\\"\\n]+)\", txt, re.DOTALL)
+if not m:
+    # Format 3: wazuh_api_password or wazuh: PASS on same/next line
+    m = re.search(r\"(?:wazuh[_-]api[_-]password|'wazuh')[^\\n]*?[: ]+['\\\"]?([A-Za-z0-9!@#\$%^&*_+=./-]{8,})['\\\"]?\", txt)
+if m:
+    print(m.group(1).strip())
+else:
+    sys.exit(1)
+PYEOF
 " 2>/dev/null || echo "")
 if [ -z "$WAZUH_PASS" ]; then
-    WAZUH_PASS="CHANGE_ME — check /tmp/wazuh-install-files/wazuh-passwords.txt inside wazuh container"
+    WAZUH_PASS="CHANGE_ME"
+    echo "[!] Could not auto-extract Wazuh password."
+    echo "    Run: incus exec wazuh -- cat /tmp/wazuh-install-files/wazuh-passwords.txt"
+    echo "    Then update WAZUH_PASS in .env manually."
 fi
 
 # ── Generate .env from .env.example ─────────────────────────────────────────
@@ -187,7 +209,13 @@ if incus info smartcity-services &>/dev/null && \
     echo "[*] Copying project files into smartcity-services"
     incus exec smartcity-services -- mkdir -p /home/ubuntu/smartcity
     tar -C "$PROJECT_DIR" -czf - . | incus exec smartcity-services -- bash -c "tar -xzf - -C /home/ubuntu/smartcity/"
-    incus exec smartcity-services -- chown -R ubuntu:ubuntu /home/ubuntu/smartcity 2>/dev/null || true
+    # Chown everything except the bind-mounted logs directory (owned by the Incus host).
+    incus exec smartcity-services -- bash -c "
+        chown ubuntu:ubuntu /home/ubuntu/smartcity
+        find /home/ubuntu/smartcity -mindepth 1 \
+            -not -path '/home/ubuntu/smartcity/logs*' \
+            -exec chown ubuntu:ubuntu {} +
+    "
     incus file push "$PROJECT_DIR/.env" smartcity-services/home/ubuntu/smartcity/.env
 fi
 

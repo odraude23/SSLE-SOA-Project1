@@ -17,7 +17,8 @@ done
 for DIR in "$HOME/smartcity-shared-logs" "$HOME/wazuh-alerts-shared"; do
     if [ -d "$DIR" ]; then
         echo "[*] Removing $DIR"
-        rm -rf "$DIR"
+        # sudo required: Wazuh writes alert files as root into the shared directory
+        sudo rm -rf "$DIR"
     else
         echo "[~] $DIR not found, skipping"
     fi
