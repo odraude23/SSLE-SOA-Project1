@@ -335,7 +335,7 @@ DASHBOARD_HTML = """<!DOCTYPE html>
 </main>
 
 <script>
-var ZONE_ICONS = { north: '\u{1F9ED}', center: '\u{1F3D9}️', south: '\u{1F30A}' };
+var ZONE_ICONS = { north: 'N', center: 'C', south: 'S' };
 var ZONE_ICON_CLS = { north: 'zone-icon-north', center: 'zone-icon-center', south: 'zone-icon-south' };
 
 function aqiClass(v) {
@@ -357,7 +357,7 @@ function statusPill(s) {
   return '<span class="status-pill ' + cls + '">' + esc(s || 'unknown') + '</span>';
 }
 function renderZone(zone, data, status) {
-  var icon = ZONE_ICONS[zone] || '\u{1F4CD}';
+  var icon = ZONE_ICONS[zone] || '?';
   var iconCls = ZONE_ICON_CLS[zone] || '';
   if (data.error) {
     return '<div class="zone-card"><div class="zone-card-header"><div class="zone-name"><div class="zone-icon ' + iconCls + '">' + icon + '</div>' + esc(zone) + '</div>' + statusPill('unknown') + '</div><div class="error-state">Service unavailable</div></div>';
