@@ -161,11 +161,11 @@ body { font-family: 'Montserrat', system-ui, sans-serif; font-size: 14px; backgr
 }
 .nav-brand {
   display: flex; align-items: center; gap: 10px; color: #fff;
-  font-size: 1rem; font-weight: 700; text-decoration: none; letter-spacing: -0.01em;
+  font-size: 1rem; font-weight: 600; text-decoration: none; letter-spacing: -0.01em;
 }
 .nav-right { display: flex; align-items: center; gap: 20px; }
-.nav-status { display: flex; align-items: center; gap: 7px; font-size: 0.75rem; color: rgba(255,255,255,0.85); }
-.status-dot { width: 8px; height: 8px; border-radius: 50%; background: #4ade80; box-shadow: 0 0 6px #4ade80; flex-shrink: 0; }
+.nav-status { display: flex; align-items: center; gap: 8px; font-size: 0.75rem; color: rgba(255,255,255,0.85); }
+.status-dot { width: 8px; height: 8px; border-radius: 50%; background: #4ade80; flex-shrink: 0; }
 .nav-time { font-size: 0.75rem; color: rgba(255,255,255,0.6); }
 .sidebar {
   position: fixed; top: 64px; left: 0; width: 220px; height: calc(100vh - 64px);
@@ -174,13 +174,14 @@ body { font-family: 'Montserrat', system-ui, sans-serif; font-size: 14px; backgr
 }
 .sidebar::-webkit-scrollbar { display: none; }
 .sidebar-label {
-  padding: 20px 20px 8px; font-size: 0.6rem; text-transform: uppercase;
-  letter-spacing: 0.1em; color: rgba(255,255,255,0.4); font-weight: 600;
+  padding: 20px 20px 8px; font-size: 0.75rem;
+  color: rgba(255,255,255,0.4); font-weight: 500;
 }
 .nav-item {
-  display: flex; align-items: center; gap: 10px; padding: 11px 20px;
-  color: rgba(255,255,255,0.7); text-decoration: none; font-size: 0.85rem;
-  font-weight: 500; border-left: 3px solid transparent; transition: all 0.15s;
+  display: flex; align-items: center; gap: 10px; padding: 12px 20px;
+  color: rgba(255,255,255,0.7); text-decoration: none; font-size: 0.875rem;
+  font-weight: 400; border-left: 3px solid transparent;
+  transition: background-color 0.15s, color 0.15s, border-color 0.15s;
 }
 .nav-item:hover { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.95); }
 .nav-item.active { background: rgba(255,255,255,0.15); color: #fff; border-left-color: #fff; }
@@ -188,21 +189,21 @@ body { font-family: 'Montserrat', system-ui, sans-serif; font-size: 14px; backgr
 .nav-label { flex: 1; }
 .nav-badge {
   background: #ef4444; color: #fff; border-radius: 999px;
-  padding: 1px 6px; font-size: 0.65rem; font-weight: 700; min-width: 18px; text-align: center;
+  padding: 1px 6px; font-size: 0.65rem; font-weight: 500; min-width: 18px; text-align: center;
 }
 .sidebar-bottom {
   margin-top: auto; padding: 16px 20px; border-top: 1px solid rgba(255,255,255,0.1);
-  font-size: 0.72rem; color: rgba(255,255,255,0.35); line-height: 1.6;
+  font-size: 0.75rem; color: rgba(255,255,255,0.35);
 }
 .content { margin-left: 220px; margin-top: 64px; padding: 28px; min-height: calc(100vh - 64px); }
 .page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 24px; }
-.page-title { font-size: 1.25rem; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 10px; }
-.page-subtitle { font-size: 0.78rem; color: var(--text-muted); margin-top: 4px; font-weight: 400; }
+.page-title { font-size: 1.25rem; font-weight: 600; color: var(--text); display: flex; align-items: center; gap: 10px; }
+.page-subtitle { font-size: 0.8125rem; color: var(--text-muted); margin-top: 4px; font-weight: 400; }
 .page-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; padding-top: 2px; }
 .btn {
-  display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 7px;
-  font-size: 0.75rem; font-weight: 600; cursor: pointer; border: none;
-  transition: all 0.15s; font-family: inherit; text-decoration: none;
+  display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 7px;
+  font-size: 0.75rem; font-weight: 500; cursor: pointer; border: none;
+  transition: background-color 0.15s, color 0.15s, border-color 0.15s; font-family: inherit; text-decoration: none;
 }
 .btn-outline { background: #fff; border: 1px solid var(--border); color: var(--text-muted); }
 .btn-outline:hover { border-color: var(--accent); color: var(--accent); background: #eff6ff; }
@@ -236,34 +237,35 @@ DASHBOARD_HTML = """<!DOCTYPE html>
 }
 .zone-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
 .zone-card-header {
-  padding: 16px 20px 14px; border-bottom: 1px solid var(--border);
+  padding: 16px 20px; border-bottom: 1px solid var(--border);
   display: flex; align-items: center; justify-content: space-between;
 }
 .zone-name {
-  font-size: 1rem; font-weight: 700; color: var(--text); text-transform: capitalize;
+  font-size: 1rem; font-weight: 600; color: var(--text); text-transform: capitalize;
   display: flex; align-items: center; gap: 10px;
 }
-.zone-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
-.zone-icon-north { background: #dbeafe; }
-.zone-icon-center { background: #d1fae5; }
-.zone-icon-south { background: #fce7f3; }
-.status-pill { padding: 3px 10px; border-radius: 999px; font-size: 0.68rem; font-weight: 600; }
+.zone-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.875rem; font-weight: 600; color: var(--text-muted); }
+.zone-icon-north { background: #f1f5f9; }
+.zone-icon-center { background: #f1f5f9; }
+.zone-icon-south { background: #f1f5f9; }
+.status-pill { padding: 3px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 500; }
 .pill-healthy { background: #dcfce7; color: #15803d; }
 .pill-degraded { background: #fee2e2; color: #b91c1c; }
 .pill-unknown { background: #f1f5f9; color: #64748b; }
 .zone-card-body { padding: 16px 20px 20px; }
 .metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-.metric-tile { background: #f8fafc; border-radius: 10px; padding: 14px 10px; text-align: center; border: 1px solid var(--border); }
-.metric-label { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); font-weight: 600; }
-.metric-value { font-size: 1.5rem; font-weight: 700; margin: 5px 0 3px; line-height: 1; }
+.metric-tile { background: #f8fafc; border-radius: 8px; padding: 12px 10px; text-align: center; border: 1px solid var(--border); }
+.metric-label { font-size: 0.65rem; letter-spacing: 0.03em; color: var(--text-muted); font-weight: 500; }
+.metric-value { font-size: 1.5rem; font-weight: 600; margin: 4px 0 4px; line-height: 1; }
+.metric-value-aqi { font-size: 2rem; }
 .metric-unit { font-size: 0.65rem; color: var(--text-muted); }
 .aqi-good { color: #16a34a; }
 .aqi-moderate { color: #d97706; }
 .aqi-unhealthy { color: #ea580c; }
 .aqi-hazardous { color: #dc2626; }
-.c-blue { color: #2563eb; }
-.c-purple { color: #7c3aed; }
-.error-state { padding: 20px; text-align: center; color: var(--text-muted); font-size: 0.82rem; }
+.metric-tile-aqi { position: relative; }
+.aqi-line { display: block; width: 28px; height: 1px; background: rgba(100,116,139,0.35); margin: 2px auto; }
+.error-state { padding: 20px; text-align: center; color: var(--text-muted); font-size: 0.8125rem; }
 </style>
 </head>
 <body>
@@ -303,7 +305,7 @@ DASHBOARD_HTML = """<!DOCTYPE html>
     <span class="nav-badge" id="inbox-badge" style="display:none">0</span>
   </a>
   <div class="sidebar-bottom">
-    Smart City Ops<br>Environmental Monitor v1.0
+    Smart City Ops
   </div>
 </aside>
 
@@ -311,12 +313,12 @@ DASHBOARD_HTML = """<!DOCTYPE html>
   <div class="page-header">
     <div>
       <div class="page-title">
-        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color:#3b82f6">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
           <path d="M12 2a10 10 0 100 20A10 10 0 0012 2z"/><path d="M12 6v6l4 2"/>
         </svg>
         Environmental Monitor
       </div>
-      <div class="page-subtitle">Real-time sensor data across all city zones &nbsp;&middot;&nbsp; auto-refresh every 10s</div>
+      <div class="page-subtitle">Real-time sensor data across all city zones</div>
     </div>
     <div class="page-actions">
       <a href="/api/data" target="_blank" class="btn btn-outline">
@@ -339,7 +341,7 @@ var ZONE_ICONS = { north: 'N', center: 'C', south: 'S' };
 var ZONE_ICON_CLS = { north: 'zone-icon-north', center: 'zone-icon-center', south: 'zone-icon-south' };
 
 function aqiClass(v) {
-  if (v == null) return 'c-blue';
+  if (v == null) return 'aqi-good';
   if (v <= 50) return 'aqi-good';
   if (v <= 100) return 'aqi-moderate';
   if (v <= 200) return 'aqi-unhealthy';
@@ -366,9 +368,9 @@ function renderZone(zone, data, status) {
   return '<div class="zone-card">' +
     '<div class="zone-card-header"><div class="zone-name"><div class="zone-icon ' + iconCls + '">' + icon + '</div>' + esc(zone) + '</div>' + statusPill(status.status) + '</div>' +
     '<div class="zone-card-body"><div class="metrics">' +
-      '<div class="metric-tile"><div class="metric-label">AQI</div><div class="metric-value ' + aqiClass(agg.avg) + '">' + fmt(agg.avg, 0) + '</div><div class="metric-unit">index</div></div>' +
-      '<div class="metric-tile"><div class="metric-label">Temperature</div><div class="metric-value c-blue">' + fmt(temp.avg) + '</div><div class="metric-unit">°C</div></div>' +
-      '<div class="metric-tile"><div class="metric-label">Noise</div><div class="metric-value c-purple">' + fmt(noise.avg, 0) + '</div><div class="metric-unit">dB</div></div>' +
+      '<div class="metric-tile metric-tile-aqi"><div class="metric-label">AQI</div><div class="metric-value metric-value-aqi ' + aqiClass(agg.avg) + '">' + fmt(agg.avg, 0) + '</div><span class="aqi-line"></span><div class="metric-unit">index</div></div>' +
+      '<div class="metric-tile"><div class="metric-label">Temperature</div><div class="metric-value">' + fmt(temp.avg) + '</div><div class="metric-unit">°C</div></div>' +
+      '<div class="metric-tile"><div class="metric-label">Noise</div><div class="metric-value">' + fmt(noise.avg, 0) + '</div><div class="metric-unit">dB</div></div>' +
     '</div></div></div>';
 }
 async function updateInboxBadge() {
@@ -398,7 +400,7 @@ async function refresh() {
     var dot = document.getElementById('status-dot');
     if (dot) {
       var col = healthy === total ? '#4ade80' : '#f97316';
-      dot.style.background = col; dot.style.boxShadow = '0 0 6px ' + col;
+      dot.style.background = col;
     }
     document.getElementById('nav-time').textContent = 'Updated ' + new Date().toLocaleTimeString();
   } catch(e) { console.error(e); }
@@ -424,7 +426,7 @@ MAIL_VIEWER_HTML = """<!DOCTYPE html>
 """ + _CSS + """
 .unread-chip {
   background: #ef4444; color: #fff; border-radius: 999px;
-  padding: 2px 9px; font-size: 0.68rem; font-weight: 700; vertical-align: middle;
+  padding: 2px 9px; font-size: 0.68rem; font-weight: 600; vertical-align: middle;
 }
 .mail-wrapper {
   background: var(--card-bg); border-radius: 14px; border: 1px solid var(--border);
@@ -435,12 +437,13 @@ MAIL_VIEWER_HTML = """<!DOCTYPE html>
 .mail-list-header {
   padding: 14px 16px; border-bottom: 1px solid var(--border);
   display: flex; align-items: center; justify-content: space-between;
-  font-size: 0.8rem; font-weight: 600; color: var(--text); flex-shrink: 0;
+  font-size: 0.8125rem; font-weight: 500; color: var(--text); flex-shrink: 0;
 }
-.unread-count { background: var(--accent); color: #fff; border-radius: 999px; padding: 2px 8px; font-size: 0.65rem; font-weight: 700; }
+.unread-count { background: var(--accent); color: #fff; border-radius: 999px; padding: 2px 8px; font-size: 0.65rem; font-weight: 500; }
 .mail-list-scroll { flex: 1; overflow-y: auto; scrollbar-width: thin; scrollbar-color: #cbd5e1 transparent; }
 .mail-item {
-  padding: 13px 16px; border-bottom: 1px solid #f1f5f9; cursor: pointer; transition: background 0.1s;
+  padding: 12px 16px; border-bottom: 1px solid #f1f5f9; cursor: pointer;
+  transition: background-color 0.1s;
 }
 .mail-item:hover { background: #f8fafc; }
 .mail-item.active { background: #eff6ff; border-left: 3px solid var(--accent); padding-left: 13px; }
@@ -448,7 +451,7 @@ MAIL_VIEWER_HTML = """<!DOCTYPE html>
 .unread-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
 .read-spacer { width: 7px; flex-shrink: 0; }
 .mail-subject { font-size: 0.82rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
-.mail-item.unread .mail-subject { font-weight: 700; color: var(--text); }
+.mail-item.unread .mail-subject { font-weight: 600; color: var(--text); }
 .mail-item.read .mail-subject { font-weight: 500; color: var(--text-muted); }
 .mail-from { font-size: 0.72rem; color: var(--text-muted); margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .mail-date { font-size: 0.68rem; color: #94a3b8; margin-top: 2px; }
@@ -459,7 +462,7 @@ MAIL_VIEWER_HTML = """<!DOCTYPE html>
 .empty-reader p { font-size: 0.85rem; }
 .empty-list { padding: 32px 16px; text-align: center; color: var(--text-muted); font-size: 0.82rem; }
 .reader-scroll { flex: 1; overflow-y: auto; padding: 24px 28px; scrollbar-width: thin; scrollbar-color: #cbd5e1 transparent; }
-.reader-subject { font-size: 1.1rem; font-weight: 700; color: var(--text); margin-bottom: 14px; line-height: 1.4; }
+.reader-subject { font-size: 1.1rem; font-weight: 600; color: var(--text); margin-bottom: 14px; line-height: 1.4; }
 .reader-meta { background: #f8fafc; border-radius: 8px; padding: 10px 14px; margin-bottom: 16px; display: flex; flex-direction: column; gap: 5px; border: 1px solid var(--border); }
 .meta-row { font-size: 0.78rem; color: var(--text-muted); }
 .meta-row strong { color: var(--text); font-weight: 600; margin-right: 6px; }
@@ -508,7 +511,7 @@ MAIL_VIEWER_HTML = """<!DOCTYPE html>
     <span class="nav-badge" id="inbox-badge" style="display:none">0</span>
   </a>
   <div class="sidebar-bottom">
-    Smart City Ops<br>Environmental Monitor v1.0
+    Smart City Ops
   </div>
 </aside>
 
@@ -516,14 +519,14 @@ MAIL_VIEWER_HTML = """<!DOCTYPE html>
   <div class="page-header">
     <div>
       <div class="page-title">
-        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color:#3b82f6">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
           <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
           <polyline points="22,6 12,13 2,6"/>
         </svg>
         Operator Inbox
         <span class="unread-chip" id="unread-chip" style="display:none">0</span>
       </div>
-      <div class="page-subtitle">Alert notifications and system messages</div>
+      <div class="page-subtitle">Incoming alerts for the duty operator</div>
     </div>
     <div class="page-actions">
       <button class="btn btn-outline" onclick="loadMail()">
