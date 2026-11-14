@@ -220,7 +220,10 @@ async def honeypot_config(request: Request):
         "zone": ZONE,
     }
     access_logger.info(json.dumps(record))
-    return {"config": {"debug": False, "version": "1.0.0", "zone": ZONE}}
+    # Simulates a misconfigured admin endpoint that leaks the internal service token.
+    # In a real deployment this mirrors Spring Boot /actuator/env or a debug endpoint
+    # left enabled — attacker reads the token and uses it to impersonate internal services.
+    return {"config": {"debug": False, "version": "1.0.0", "zone": ZONE, "internal_token": INTERNAL_TOKEN}}
 
 
 @app.get("/api/admin/metrics")

@@ -18,7 +18,7 @@ echo "Project: $PROJECT_DIR"
 
 # ── Shared directories on the Incus host ────────────────────────────────────
 echo "[*] Creating shared directories"
-mkdir -p "$SHARED_LOGS"/{registry,ingestion,storage,analytics,ops-portal,alert-service,zone-aggregator-north,zone-aggregator-center,zone-aggregator-south,mail}
+mkdir -p "$SHARED_LOGS"/{registry,ingestion,storage,analytics,ops-portal,alert-service,zone-aggregator-north,zone-aggregator-center,zone-aggregator-south,mail,threat-blocker}
 chmod -R 777 "$SHARED_LOGS"
 mkdir -p "$WAZUH_ALERTS"
 chmod 777 "$WAZUH_ALERTS"
@@ -58,6 +58,11 @@ else
         apt-get update -q
         apt-get install -y -q docker-ce docker-ce-cli containerd.io docker-compose-plugin
         usermod -aG docker ubuntu
+        # Disable userland proxy so containers see the real source IP for published ports.
+        # Without this, docker-proxy rewrites all external connections to 172.17.0.1,
+        # making per-IP blocking in DOCKER-USER ineffective.
+        echo '{\"userland-proxy\": false}' > /etc/docker/daemon.json
+        systemctl restart docker
     "
 
 fi
@@ -152,6 +157,15 @@ sed -i "s|^INTERNAL_TOKEN=.*|INTERNAL_TOKEN=$INTERNAL_TOKEN|" "$PROJECT_DIR/.env
 sed -i "s|^WAZUH_HOST=.*|WAZUH_HOST=$WZ_IP|" "$PROJECT_DIR/.env"
 sed -i "s|^WAZUH_PASS=.*|WAZUH_PASS=$WAZUH_PASS|" "$PROJECT_DIR/.env"
 sed -i "s|^WAZUH_ALERTS_PATH=.*|WAZUH_ALERTS_PATH=/home/ubuntu/wazuh-alerts|" "$PROJECT_DIR/.env"
+
+# ── Configure threat-blocker endpoint on Wazuh ──────────────────────────────
+# block-threat.sh reads this file to know where to send block requests.
+echo "[*] Writing blocker.conf on wazuh container"
+incus exec wazuh -- bash -c "
+    echo 'BLOCKER_URL=http://$SC_IP:9200' > /var/ossec/etc/blocker.conf
+    echo 'BLOCKER_TOKEN=$INTERNAL_TOKEN'  >> /var/ossec/etc/blocker.conf
+    chmod 600 /var/ossec/etc/blocker.conf
+"
 
 # ── Copy project files into smartcity-services ──────────────────────────────
 if incus info smartcity-services &>/dev/null && \

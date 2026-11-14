@@ -128,6 +128,7 @@ services:
     build: ./services/zone-aggregator
     container_name: zone-aggregator-north
     networks: [smartcity]
+    ports: ["5100:5100"]
     environment:
       ZONE: north
       PORT: "5100"
@@ -211,6 +212,23 @@ services:
       - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
     mem_limit: 384m
     depends_on: [prometheus]
+    restart: unless-stopped
+
+  # ── Threat Blocker ────────────────────────────────────────────────────────
+  # Runs with network_mode: host so iptables commands modify the Docker host's
+  # DOCKER-USER chain (which controls all container traffic), not just this
+  # container's own namespace.  Wazuh's block-threat.sh calls POST /block here
+  # instead of running iptables locally inside the Wazuh Incus container.
+  threat-blocker:
+    build: ./services/threat-blocker
+    container_name: threat-blocker
+    network_mode: host
+    environment:
+      INTERNAL_TOKEN: ${INTERNAL_TOKEN:-changeme}
+      PORT: "9200"
+    volumes:
+      - ./logs/threat-blocker:/var/log/threat-blocker
+    mem_limit: 128m
     restart: unless-stopped
 
   # ── Wazuh Exporter ────────────────────────────────────────────────────────
