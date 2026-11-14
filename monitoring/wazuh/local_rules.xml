@@ -1,12 +1,11 @@
 <group name="smartcity,">
 
   <!-- Threat 1: DDoS — ops-portal high request rate -->
-  <rule id="100001" level="10">
-    <decoded_as>json</decoded_as>
+  <rule id="100001" level="3">
+    <if_sid>86600</if_sid>
     <field name="path">^/$|^/api/data$</field>
     <description>High frequency access to ops-portal endpoint</description>
     <group>ddos,</group>
-    <options>alert_by_email</options>
   </rule>
 
   <rule id="100002" level="12" frequency="50" timeframe="10">
@@ -19,7 +18,7 @@
 
   <!-- Threat 1: auth failures (possible credential scanning / enumeration) -->
   <rule id="100100" level="8">
-    <decoded_as>json</decoded_as>
+    <if_sid>86600</if_sid>
     <field name="event_type">auth_failed</field>
     <description>Service-to-service authentication failure</description>
     <group>authentication_failed,</group>
@@ -35,7 +34,7 @@
 
   <!-- Threat 2: APT — honeypot hits -->
   <rule id="100200" level="10">
-    <decoded_as>json</decoded_as>
+    <if_sid>86600</if_sid>
     <field name="event_type">HONEYPOT_HIT</field>
     <description>Honeypot endpoint hit on zone aggregator — possible APT probe</description>
     <group>apt,honeypot,</group>
@@ -51,7 +50,7 @@
 
   <!-- Threat 3: Spam / email flood -->
   <rule id="100300" level="10">
-    <decoded_as>json</decoded_as>
+    <if_sid>86600</if_sid>
     <field name="event_type">email_sent</field>
     <description>Alert email sent from alert-service</description>
     <group>spam,email,</group>
@@ -66,7 +65,7 @@
 
   <!-- Threat 3: failed email attempts (SpamAssassin blocking) -->
   <rule id="100302" level="8">
-    <decoded_as>json</decoded_as>
+    <if_sid>86600</if_sid>
     <field name="event_type">email_failed</field>
     <description>Alert email delivery failure</description>
     <group>spam,email,</group>
