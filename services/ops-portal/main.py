@@ -368,9 +368,9 @@ function renderZone(zone, data, status) {
   return '<div class="zone-card">' +
     '<div class="zone-card-header"><div class="zone-name"><div class="zone-icon ' + iconCls + '">' + icon + '</div>' + esc(zone) + '</div>' + statusPill(status.status) + '</div>' +
     '<div class="zone-card-body"><div class="metrics">' +
-      '<div class="metric-tile metric-tile-aqi"><div class="metric-label">AQI</div><div class="metric-value metric-value-aqi ' + aqiClass(agg.avg) + '">' + fmt(agg.avg, 0) + '</div><span class="aqi-line"></span><div class="metric-unit">index</div></div>' +
+      '<div class="metric-tile metric-tile-aqi"><div class="metric-label">AQI</div><div class="metric-value metric-value-aqi ' + aqiClass(agg.avg) + '">' + fmt(agg.avg, 1) + '</div><span class="aqi-line"></span><div class="metric-unit">index</div></div>' +
       '<div class="metric-tile"><div class="metric-label">Temperature</div><div class="metric-value">' + fmt(temp.avg) + '</div><div class="metric-unit">°C</div></div>' +
-      '<div class="metric-tile"><div class="metric-label">Noise</div><div class="metric-value">' + fmt(noise.avg, 0) + '</div><div class="metric-unit">dB</div></div>' +
+      '<div class="metric-tile"><div class="metric-label">Noise</div><div class="metric-value">' + fmt(noise.avg, 1) + '</div><div class="metric-unit">dB</div></div>' +
     '</div></div></div>';
 }
 async function updateInboxBadge() {
