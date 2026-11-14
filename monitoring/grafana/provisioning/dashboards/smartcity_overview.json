@@ -392,7 +392,7 @@
         }, "overrides": []
       },
       "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "colorMode": "background", "graphMode": "none", "textMode": "auto"},
-      "targets": [{"datasource": {"type": "prometheus", "uid": "prometheus-uid"}, "expr": "sum(wazuh_alerts_total{rule_id=~\"1001.*\"}) or vector(0)", "instant": true, "legendFormat": "DDoS"}]
+      "targets": [{"datasource": {"type": "prometheus", "uid": "prometheus-uid"}, "expr": "sum(wazuh_alerts_total{rule_id=~\"10000[12]\"}) or vector(0)", "instant": true, "legendFormat": "DDoS"}]
     },
     {
       "id": 32, "type": "stat", "title": "APT Alerts",
@@ -453,7 +453,7 @@
       },
       "targets": [{
         "datasource": {"type": "prometheus", "uid": "prometheus-uid"},
-        "expr": "sum(rate(http_requests_total{job=\"ops-portal\"}[10s]))",
+        "expr": "sum(rate(http_requests_total{job=\"ops-portal\"}[30s]))",
         "legendFormat": "ops-portal req/s"
       }]
     },
