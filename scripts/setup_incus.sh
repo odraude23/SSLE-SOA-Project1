@@ -129,12 +129,12 @@ additions = '''
   <localfile><log_format>syslog</log_format><location>/var/log/smartcity/mail/mail.log</location></localfile>
   <!-- Active response: block IPs triggering DDoS/APT/spam rules -->
   <command><name>block-threat</name><executable>block-threat.sh</executable><timeout_allowed>yes</timeout_allowed></command>
-  <active-response><command>block-threat</command><location>local</location><rules_id>100002,100101,100201,100301,100303</rules_id><timeout>300</timeout></active-response>
+  <active-response><command>block-threat</command><location>server</location><rules_id>100002,100101,100201,100301,100303</rules_id><timeout>300</timeout></active-response>
 '''
 path = '/var/ossec/etc/ossec.conf'
 cfg = open(path).read()
 if 'SmartCity service logs' not in cfg:
-    cfg = cfg.replace('</ossec_config>', additions + '</ossec_config>')
+    cfg = cfg.replace('</ossec_config>', additions + '</ossec_config>', 1)
     open(path, 'w').write(cfg)
     print('Injected.')
 else:

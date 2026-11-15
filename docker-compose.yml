@@ -223,6 +223,7 @@ services:
     build: ./services/threat-blocker
     container_name: threat-blocker
     network_mode: host
+    cap_add: [NET_ADMIN]
     environment:
       INTERNAL_TOKEN: ${INTERNAL_TOKEN:-changeme}
       PORT: "9200"
