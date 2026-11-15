@@ -44,6 +44,26 @@ def _iptables(flag: str, ip: str):
     # DOCKER-USER is the chain Docker reserves for user-defined rules.
     # Rules here are processed before Docker's own FORWARD rules and persist
     # across 'docker restart' (but not across daemon restart — acceptable for demo).
+    if flag == "I":
+        # Skip insert if an identical rule already exists (prevents duplicate rules
+        # when rule 100002 fires multiple times for the same ongoing attack).
+        check = subprocess.run(
+            ["iptables", "-C", "DOCKER-USER", "-s", ip, "-j", "DROP"],
+            capture_output=True,
+        )
+        if check.returncode == 0:
+            return
+    elif flag == "D":
+        # Remove ALL matching rules, not just the first, to clean up any duplicates
+        # that slipped through before this check was added.
+        while True:
+            result = subprocess.run(
+                ["iptables", "-D", "DOCKER-USER", "-s", ip, "-j", "DROP"],
+                capture_output=True,
+            )
+            if result.returncode != 0:
+                break
+        return
     subprocess.run(
         ["iptables", f"-{flag}", "DOCKER-USER", "-s", ip, "-j", "DROP"],
         check=True,
