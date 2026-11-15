@@ -1,15 +1,13 @@
 #!/bin/bash
 # Wazuh 4.x active response: delegate IP blocking to threat-blocker service.
 #
-# Wazuh 4.x sends alert data as a JSON object on stdin (not positional args).
-# Format: {"version":1,"command":"add","parameters":{"alert":{...}}}
-#
-# threat-blocker runs with network_mode:host inside smartcity-services,
-# so its iptables commands modify the DOCKER-USER chain on the Docker host.
+# Protocol: Wazuh 4.x sends one JSON line on stdin per invocation and waits for
+# a response on stdout before proceeding. Use `read` (not `cat`) — `cat` blocks
+# until stdin EOF, but execd keeps stdin open waiting for stdout: deadlock.
+# Fix: read exactly one line, echo it back immediately, then act.
 
 CONF="/var/ossec/etc/blocker.conf"
 LOGFILE="/var/log/wazuh-active-response.log"
-
 BLOCKER_URL="http://localhost:9200"
 BLOCKER_TOKEN="changeme"
 if [ -f "$CONF" ]; then
@@ -17,14 +15,19 @@ if [ -f "$CONF" ]; then
     source "$CONF"
 fi
 
-# Read full stdin into a temp file (JSON can be multi-line)
+# Read exactly one line from stdin (the Wazuh alert JSON)
+read -r INPUT_JSON
+
+# Respond to execd immediately — it is waiting on stdout before it proceeds
+echo "$INPUT_JSON"
+
+# Log raw input for debugging (truncated to 200 chars)
+echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) raw=$(echo "$INPUT_JSON" | cut -c1-200)" >> "$LOGFILE"
+
+# Write JSON to a temp file so Python can parse it safely
 INPUT_FILE=$(mktemp)
-cat > "$INPUT_FILE"
+printf '%s\n' "$INPUT_JSON" > "$INPUT_FILE"
 
-# Log raw input for debugging (truncated)
-echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) raw=$(head -c 300 "$INPUT_FILE")" >> "$LOGFILE"
-
-# Parse command, IP and rule_id in one Python call
 eval "$(python3 -c "
 import json, sys
 try:
@@ -38,10 +41,10 @@ try:
     print(f'IP={ip}')
     print(f'RULE_ID={rule}')
 except Exception as e:
-    print(f'ACTION=')
-    print(f'IP=')
-    print(f'RULE_ID=')
-    import sys; print(f'PARSE_ERR={e}', file=sys.stderr)
+    print('ACTION=')
+    print('IP=')
+    print('RULE_ID=')
+    sys.stderr.write(f'PARSE_ERR={e}\n')
 " 2>> "$LOGFILE")"
 
 rm -f "$INPUT_FILE"
@@ -80,7 +83,6 @@ case "$ACTION" in
         ;;
     *)
         log "unknown_action=$ACTION"
-        exit 1
         ;;
 esac
 
