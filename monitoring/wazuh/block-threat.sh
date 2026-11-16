@@ -64,7 +64,7 @@ case "$ACTION" in
             -X POST "$BLOCKER_URL/block" \
             -H "x-internal-token: $BLOCKER_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"ip\": \"$IP\", \"duration\": 300}")
+            -d "{\"ip\": \"$IP\", \"duration\": 300, \"rule_id\": \"$RULE_ID\"}")
         if [ "$STATUS" = "200" ]; then
             log "block_requested_ok"
         else

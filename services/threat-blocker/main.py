@@ -12,10 +12,15 @@ import logging
 import os
 import subprocess
 import threading
+import time as _time
 from datetime import datetime, timezone
 
 from fastapi import FastAPI, Header, HTTPException, Request
+from fastapi.responses import Response
 from pydantic import BaseModel
+from prometheus_client import (
+    Counter, Gauge, generate_latest, CONTENT_TYPE_LATEST, CollectorRegistry
+)
 
 INTERNAL_TOKEN = os.getenv("INTERNAL_TOKEN", "changeme")
 PORT = int(os.getenv("PORT", "9200"))
@@ -28,6 +33,26 @@ _logger.setLevel(logging.INFO)
 _h = logging.FileHandler(f"{LOG_DIR}/access.log")
 _h.setFormatter(logging.Formatter("%(message)s"))
 _logger.addHandler(_h)
+
+# ── Prometheus metrics ────────────────────────────────────────────────────────
+_prom = CollectorRegistry()
+
+_blocks_total = Counter(
+    "threat_blocker_blocks_total",
+    "Total IP block events by threat",
+    ["ip", "rule_id"],
+    registry=_prom,
+)
+_blocked_since = Gauge(
+    "threat_blocker_blocked_since_unix",
+    "Unix timestamp when IP was blocked (0 = currently unblocked)",
+    ["ip", "rule_id"],
+    registry=_prom,
+)
+
+# ip -> rule_id so unblock can reset the right gauge label set
+_blocked_rule: dict[str, str] = {}
+_blocked_lock = threading.Lock()
 
 
 def _log(event_type: str, ip: str, detail: str = ""):
@@ -71,11 +96,13 @@ def _iptables(flag: str, ip: str):
     )
 
 
-def _schedule_unblock(ip: str, duration: int):
-    import time
-    time.sleep(duration)
+def _schedule_unblock(ip: str, duration: int, rule_id: str):
+    _time.sleep(duration)
     try:
         _iptables("D", ip)
+        with _blocked_lock:
+            _blocked_rule.pop(ip, None)
+        _blocked_since.labels(ip=ip, rule_id=rule_id).set(0)
         _log("ip_unblocked", ip, f"auto after {duration}s")
     except Exception as e:
         _log("unblock_failed", ip, str(e))
@@ -87,6 +114,7 @@ app = FastAPI(title="Threat Blocker", version="1.0.0")
 class BlockRequest(BaseModel):
     ip: str
     duration: int = 300
+    rule_id: str = "unknown"
 
 
 @app.post("/block")
@@ -100,9 +128,15 @@ async def block(req: BlockRequest, x_internal_token: str = Header(None)):
     except subprocess.CalledProcessError as e:
         _log("block_failed", req.ip, e.stderr.decode() if e.stderr else str(e))
         raise HTTPException(status_code=500, detail="iptables failed")
-    _log("ip_blocked", req.ip, f"duration={req.duration}s")
-    threading.Thread(target=_schedule_unblock, args=(req.ip, req.duration), daemon=True).start()
-    return {"status": "blocked", "ip": req.ip, "duration": req.duration}
+    with _blocked_lock:
+        _blocked_rule[req.ip] = req.rule_id
+    _blocks_total.labels(ip=req.ip, rule_id=req.rule_id).inc()
+    _blocked_since.labels(ip=req.ip, rule_id=req.rule_id).set(_time.time())
+    _log("ip_blocked", req.ip, f"rule_id={req.rule_id} duration={req.duration}s")
+    threading.Thread(
+        target=_schedule_unblock, args=(req.ip, req.duration, req.rule_id), daemon=True
+    ).start()
+    return {"status": "blocked", "ip": req.ip, "duration": req.duration, "rule_id": req.rule_id}
 
 
 @app.delete("/block/{ip}")
@@ -113,8 +147,16 @@ async def unblock(ip: str, x_internal_token: str = Header(None)):
         _iptables("D", ip)
     except subprocess.CalledProcessError as e:
         raise HTTPException(status_code=500, detail="iptables failed")
+    with _blocked_lock:
+        rule_id = _blocked_rule.pop(ip, "unknown")
+    _blocked_since.labels(ip=ip, rule_id=rule_id).set(0)
     _log("ip_unblocked", ip, "manual")
     return {"status": "unblocked", "ip": ip}
+
+
+@app.get("/metrics")
+async def metrics():
+    return Response(content=generate_latest(_prom), media_type=CONTENT_TYPE_LATEST)
 
 
 @app.get("/health")

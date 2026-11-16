@@ -5,7 +5,7 @@ set -e
 
 echo "=== Smart City SOA — Teardown ==="
 
-for INSTANCE in smartcity-services wazuh; do
+for INSTANCE in smartcity-services wazuh attacker; do
     if incus info "$INSTANCE" &>/dev/null; then
         echo "[*] Deleting $INSTANCE"
         incus delete "$INSTANCE" --force

