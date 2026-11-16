@@ -2548,7 +2548,9 @@
           "id": "organize",
           "options": {
             "excludeByName": {
-              "Time": true
+              "Time": true,
+              "instance": true,
+              "job": true
             },
             "renameByName": {
               "ip": "Blocked IP",
