@@ -12,7 +12,7 @@ Run from the Debian VM — the script auto-detects the smartcity-services Incus 
 Port 5100 must be exposed (added in docker-compose.yml).
 
 Usage:
-    python3 poc/apt_attack.py [--target http://<ip>:5100] [--probes 5] [--delay 30]
+    python3 poc/apt_attack.py [--target http://<ip>:5100] [--probes 5] [--delay 10]
 """
 import argparse
 import json
@@ -46,7 +46,7 @@ _default_target = f"http://{_ip}:5100" if _ip else "http://localhost:5100"
 parser = argparse.ArgumentParser(description="APT PoC — honeypot probing + credential extraction")
 parser.add_argument("--target", default=_default_target, help="Zone aggregator-north URL")
 parser.add_argument("--probes", type=int, default=5, help="Number of probe rounds")
-parser.add_argument("--delay", type=float, default=30.0, help="Delay between rounds (seconds)")
+parser.add_argument("--delay", type=float, default=10.0, help="Delay between rounds (seconds)")
 args = parser.parse_args()
 
 HONEYPOT_PATHS = ["/api/admin/config", "/api/admin/metrics"]
