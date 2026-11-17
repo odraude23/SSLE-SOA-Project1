@@ -1287,7 +1287,7 @@
             "type": "prometheus",
             "uid": "prometheus-uid"
           },
-          "expr": "sum(wazuh_alerts_total{rule_id=~\"1003.*\"}) or vector(0)",
+          "expr": "sum(wazuh_alerts_total{rule_id=\"100301\"}) or vector(0)",
           "instant": true,
           "legendFormat": "Spam"
         }
@@ -1560,7 +1560,7 @@
             "type": "prometheus",
             "uid": "prometheus-uid"
           },
-          "expr": "sum(increase(alert_emails_total[1m])) by (zone)",
+          "expr": "sum(increase(alert_emails_total[5m])) by (zone)",
           "legendFormat": "zone={{zone}}"
         },
         {

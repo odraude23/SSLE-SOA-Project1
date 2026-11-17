@@ -42,11 +42,15 @@ mail_logger.addHandler(mh)
 app = FastAPI(title="Alert Service", version="1.0.0")
 Instrumentator().instrument(app).expose(app)
 
+CIRCUIT_THRESHOLD = int(os.getenv("CIRCUIT_THRESHOLD", "10"))  # emails in 60s
+CIRCUIT_COOLDOWN  = int(os.getenv("CIRCUIT_COOLDOWN",  "300")) # seconds to stay open
+
 emails_sent = Counter("alert_emails_total", "Total alert emails sent", ["zone", "metric"])
 emails_rate = Counter("alert_email_rate_per_min", "Alert emails in current minute")
 
 rate_lock = threading.Lock()
 rate_window: list[float] = []
+circuit_open_until: float = 0.0
 
 
 def log_access(req: Request, action: str, detail: str = ""):
@@ -85,6 +89,26 @@ async def auth_middleware(request: Request, call_next):
 
 
 def send_email(zone: str, metric: str, value: float, threshold: float):
+    global circuit_open_until
+    now = time.time()
+
+    with rate_lock:
+        # Drop stale entries outside the 60s window
+        rate_window[:] = [t for t in rate_window if now - t <= 60]
+
+        if now < circuit_open_until:
+            log_mail("circuit_breaker_blocked", zone,
+                     f"[CIRCUIT OPEN] email suppressed",
+                     f"resets_in={int(circuit_open_until - now)}s")
+            return
+
+        if len(rate_window) >= CIRCUIT_THRESHOLD:
+            circuit_open_until = now + CIRCUIT_COOLDOWN
+            log_mail("circuit_breaker_open", zone,
+                     f"[CIRCUIT OPEN] email flood detected",
+                     f"rate={len(rate_window)}/60s threshold={CIRCUIT_THRESHOLD} cooldown={CIRCUIT_COOLDOWN}s")
+            return
+
     subject = f"[ALERT][{zone.upper()}] {metric.upper()} exceeded threshold: {value} > {threshold}"
     body = (
         f"Smart City Environmental Monitor\n\n"
@@ -106,8 +130,7 @@ def send_email(zone: str, metric: str, value: float, threshold: float):
         emails_sent.labels(zone=zone, metric=metric).inc()
         emails_rate.inc()
         with rate_lock:
-            now = time.time()
-            rate_window.append(now)
+            rate_window.append(time.time())
         log_mail("email_sent", zone, subject)
     except Exception as e:
         log_mail("email_failed", zone, subject, str(e))
