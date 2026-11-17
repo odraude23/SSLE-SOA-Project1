@@ -130,7 +130,7 @@ for i in range(count):
 
 print(f"\\n[+] Done. Injected={{sent}} Failed={{failed}}")
 print(f"[+] Wazuh:      rule 100301 (email flood detected)")
-print(f"[+] Prometheus: alert_emails_total and wazuh_alerts_total{{rule_id=\\"100301\\"}}")
+print("[+] Prometheus: alert_emails_total and wazuh_alerts_total{rule_id='100301'}")
 print(f"[+] Ops portal: check Inbox — operator mailbox should be flooded")
 """
 
