@@ -30,6 +30,24 @@ sleep 5
 
 SC_IP=$(incus list smartcity-services -f csv -c 4 2>/dev/null | grep eth0 | grep -oP '[\d.]+' | head -1 || echo "smartcity-services")
 
+# ── Warm up ops-portal so its Prometheus counter exists before the first attack ─
+echo "[*] Warming up ops-portal (seeds http_requests_total counter)..."
+for i in $(seq 1 20); do
+    STATUS=$(incus exec smartcity-services -- python3 -c \
+        "import urllib.request; r=urllib.request.urlopen('http://ops-portal:5600/health', timeout=3); print(r.status)" \
+        2>/dev/null || echo "")
+    if [ "$STATUS" = "200" ]; then
+        # Hit the main route once to seed the counter before any attack
+        incus exec smartcity-services -- python3 -c \
+            "import urllib.request; urllib.request.urlopen('http://ops-portal:5600/', timeout=3)" \
+            2>/dev/null || true
+        echo "[+] ops-portal warm-up done"
+        break
+    fi
+    echo "  waiting for ops-portal... attempt $i/20"
+    sleep 3
+done
+
 echo ""
 echo "=== All services running ==="
 echo "  Ops Portal   : http://$SC_IP:5600"

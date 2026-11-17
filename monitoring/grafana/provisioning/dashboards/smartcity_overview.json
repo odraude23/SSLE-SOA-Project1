@@ -1036,8 +1036,8 @@
             "type": "prometheus",
             "uid": "prometheus-uid"
           },
-          "expr": "increase(wazuh_alerts_total[5m])",
-          "legendFormat": "rule {{rule_id}} \u2014 {{description}}"
+          "expr": "sum by (rule_id) (increase(wazuh_rule_hits_total[5m]))",
+          "legendFormat": "rule {{rule_id}}"
         }
       ]
     },
@@ -1072,7 +1072,7 @@
             "type": "prometheus",
             "uid": "prometheus-uid"
           },
-          "expr": "sum by (zone) (increase(wazuh_alerts_total[5m]))",
+          "expr": "sum by (zone) (increase(wazuh_rule_hits_total[5m]))",
           "legendFormat": "{{zone}}"
         }
       ]
@@ -1480,7 +1480,7 @@
             "type": "prometheus",
             "uid": "prometheus-uid"
           },
-          "expr": "increase(wazuh_alerts_total{rule_id=\"100200\"}[5m])",
+          "expr": "sum by (rule_id) (increase(wazuh_rule_hits_total{rule_id=\"100200\"}[5m]))",
           "legendFormat": "Honeypot hit (100200)"
         },
         {
@@ -1488,7 +1488,7 @@
             "type": "prometheus",
             "uid": "prometheus-uid"
           },
-          "expr": "increase(wazuh_alerts_total{rule_id=\"100201\"}[5m])",
+          "expr": "sum by (rule_id) (increase(wazuh_rule_hits_total{rule_id=\"100201\"}[5m]))",
           "legendFormat": "APT confirmed (100201)"
         }
       ]
@@ -1568,7 +1568,7 @@
             "type": "prometheus",
             "uid": "prometheus-uid"
           },
-          "expr": "increase(wazuh_alerts_total{rule_id=\"100301\"}[1m])",
+          "expr": "sum by (rule_id) (increase(wazuh_rule_hits_total{rule_id=\"100301\"}[1m]))",
           "legendFormat": "Wazuh flood rule 100301"
         }
       ]

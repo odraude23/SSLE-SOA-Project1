@@ -38,6 +38,23 @@ wazuh_alerts_total = Counter(
     "wazuh_alerts_total", "Total Wazuh alerts processed",
     ["level", "rule_id", "description", "client_ip", "zone"], registry=registry
 )
+# Simple counter with known rule_id+zone combos pre-seeded to 0 at startup.
+# This ensures Prometheus records a 0 baseline before the first attack, so
+# increase([5m]) works correctly on the very first run after a reset.
+wazuh_rule_hits_total = Counter(
+    "wazuh_rule_hits_total", "Alert hits by rule and zone (pre-seeded)",
+    ["rule_id", "zone"], registry=registry
+)
+
+_KNOWN_RULES = ["100001", "100002", "100200", "100201", "100301"]
+_KNOWN_ZONES = ["unknown", "north", "center", "south"]
+
+def _preinit_counters():
+    for rule_id in _KNOWN_RULES:
+        for zone in _KNOWN_ZONES:
+            wazuh_rule_hits_total.labels(rule_id=rule_id, zone=zone)
+
+_preinit_counters()
 
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger("wazuh-exporter")
@@ -136,6 +153,7 @@ def tail_alerts():
                         description=description,
                         client_ip=client_ip, zone=zone,
                     ).inc()
+                    wazuh_rule_hits_total.labels(rule_id=rule_id, zone=zone).inc()
                     count += 1
                 except json.JSONDecodeError:
                     pass
