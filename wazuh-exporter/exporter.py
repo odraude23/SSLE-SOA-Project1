@@ -102,13 +102,18 @@ def poll_api():
 
 
 _alerts_pos = 0
+_alerts_inode = 0
 
 
 def tail_alerts():
-    global _alerts_pos
+    global _alerts_pos, _alerts_inode
     if not os.path.exists(ALERTS_JSON):
         return
     try:
+        current_inode = os.stat(ALERTS_JSON).st_ino
+        if current_inode != _alerts_inode:
+            _alerts_pos = 0
+            _alerts_inode = current_inode
         with open(ALERTS_JSON, "r") as f:
             f.seek(_alerts_pos)
             for line in f:
