@@ -147,6 +147,7 @@ services:
     build: ./services/zone-aggregator
     container_name: zone-aggregator-center
     networks: [smartcity]
+    ports: ["5101:5101"]
     environment:
       ZONE: center
       PORT: "5101"
@@ -165,6 +166,7 @@ services:
     build: ./services/zone-aggregator
     container_name: zone-aggregator-south
     networks: [smartcity]
+    ports: ["5102:5102"]
     environment:
       ZONE: south
       PORT: "5102"
