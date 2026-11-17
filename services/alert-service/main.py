@@ -48,6 +48,11 @@ CIRCUIT_COOLDOWN  = int(os.getenv("CIRCUIT_COOLDOWN",  "300")) # seconds to stay
 emails_sent = Counter("alert_emails_total", "Total alert emails sent", ["zone", "metric"])
 emails_rate = Counter("alert_email_rate_per_min", "Alert emails in current minute")
 
+# Pre-seed all known zone × metric combos so Prometheus records 0 baselines at startup.
+for _z in ("north", "center", "south"):
+    for _m in ("AQI", "temperature_c", "noise_db"):
+        emails_sent.labels(zone=_z, metric=_m)
+
 rate_lock = threading.Lock()
 rate_window: list[float] = []
 circuit_open_until: float = 0.0
