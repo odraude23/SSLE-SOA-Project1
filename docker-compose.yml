@@ -88,6 +88,7 @@ services:
     build: ./services/alert-service
     container_name: alert-service
     networks: [smartcity]
+    ports: ["5500:5500"]
     environment:
       INTERNAL_TOKEN: ${INTERNAL_TOKEN:-changeme}
       REGISTRY_URL: http://service-registry:5050
