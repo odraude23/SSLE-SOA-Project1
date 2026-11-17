@@ -1364,7 +1364,7 @@
     {
       "id": 36,
       "type": "timeseries",
-      "title": "Ops Portal \u2014 Request Rate / 10s  (threshold: 50 req/s)",
+      "title": "Ops Portal \u2014 Request Rate / 2min  (threshold: 50 req/s)",
       "gridPos": {
         "h": 8,
         "w": 24,
@@ -1412,7 +1412,7 @@
             "type": "prometheus",
             "uid": "prometheus-uid"
           },
-          "expr": "sum(rate(http_requests_total{job=\"ops-portal\"}[30s]))",
+          "expr": "sum(rate(http_requests_total{job=\"ops-portal\"}[2m]))",
           "legendFormat": "ops-portal req/s"
         }
       ]
