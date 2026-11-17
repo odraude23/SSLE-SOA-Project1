@@ -116,6 +116,8 @@ def tail_alerts():
             _alerts_inode = current_inode
         with open(ALERTS_JSON, "r") as f:
             f.seek(_alerts_pos)
+            start_pos = _alerts_pos
+            count = 0
             for line in f:
                 line = line.strip()
                 if not line:
@@ -134,9 +136,12 @@ def tail_alerts():
                         description=description,
                         client_ip=client_ip, zone=zone,
                     ).inc()
+                    count += 1
                 except json.JSONDecodeError:
                     pass
             _alerts_pos = f.tell()
+            if count > 0:
+                log.info(f"[tail_alerts] pos {start_pos}→{_alerts_pos}, +{count} alerts")
     except Exception as e:
         log.warning(f"Alert tail failed: {e}")
 

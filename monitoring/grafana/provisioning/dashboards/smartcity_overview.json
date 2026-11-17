@@ -1008,7 +1008,7 @@
     {
       "id": 23,
       "type": "timeseries",
-      "title": "Alert Rate (per rule)",
+      "title": "New Alerts / 5 min (per rule)",
       "gridPos": {
         "h": 8,
         "w": 12,
@@ -1036,7 +1036,7 @@
             "type": "prometheus",
             "uid": "prometheus-uid"
           },
-          "expr": "rate(wazuh_alerts_total[5m])",
+          "expr": "increase(wazuh_alerts_total[5m])",
           "legendFormat": "rule {{rule_id}} \u2014 {{description}}"
         }
       ]
@@ -1044,7 +1044,7 @@
     {
       "id": 24,
       "type": "timeseries",
-      "title": "Alert Rate (per zone)",
+      "title": "New Alerts / 5 min (per zone)",
       "gridPos": {
         "h": 8,
         "w": 12,
@@ -1072,7 +1072,7 @@
             "type": "prometheus",
             "uid": "prometheus-uid"
           },
-          "expr": "sum by (zone) (rate(wazuh_alerts_total[5m]))",
+          "expr": "sum by (zone) (increase(wazuh_alerts_total[5m]))",
           "legendFormat": "{{zone}}"
         }
       ]
