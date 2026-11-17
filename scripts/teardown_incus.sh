@@ -18,6 +18,7 @@ for DIR in "$HOME/smartcity-shared-logs" "$HOME/wazuh-alerts-shared"; do
     if [ -d "$DIR" ]; then
         echo "[*] Removing $DIR"
         # sudo required: Wazuh writes alert files as root into the shared directory
+        sudo truncate -s 0 "$DIR/alerts.json" 2>/dev/null || true
         sudo rm -rf "$DIR"
     else
         echo "[~] $DIR not found, skipping"

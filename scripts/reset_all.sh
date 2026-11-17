@@ -54,8 +54,13 @@ incus exec smartcity-services -- docker system prune -af 2>/dev/null || true
 # ── Clear shared service logs and wazuh alerts ───────────────────────────────
 echo "[*] Clearing shared service logs at $SHARED_LOGS"
 sudo find "$SHARED_LOGS" -type f -delete 2>/dev/null || true
-echo "[*] Clearing Wazuh alerts files at $WAZUH_ALERTS"
-sudo find "$WAZUH_ALERTS" -type f -delete 2>/dev/null || true
+echo "[*] Truncating Wazuh alerts.json (preserves inode so Wazuh keeps writing)"
+if [ -f "$WAZUH_ALERTS/alerts.json" ]; then
+    sudo truncate -s 0 "$WAZUH_ALERTS/alerts.json"
+    echo "[+] alerts.json cleared"
+else
+    echo "[~] alerts.json not found, skipping"
+fi
 
 # ── Clear operator mailbox (bind mount inside Incus container) ────────────────
 echo "[*] Clearing operator mailbox"
