@@ -231,9 +231,10 @@ fi
 incus start attacker 2>/dev/null || true
 incus exec attacker -- bash -c "which python3 || apt-get install -y python3 -q"
 incus exec attacker -- mkdir -p /root/poc
-incus file push "$PROJECT_DIR/poc/ddos_attack.py"  attacker/root/poc/ddos_attack.py
-incus file push "$PROJECT_DIR/poc/apt_attack.py"   attacker/root/poc/apt_attack.py
-incus file push "$PROJECT_DIR/poc/spam_attack.py"  attacker/root/poc/spam_attack.py
+incus file push "$PROJECT_DIR/poc/ddos_attack.py"       attacker/root/poc/ddos_attack.py
+incus file push "$PROJECT_DIR/poc/apt_attack.py"        attacker/root/poc/apt_attack.py
+incus file push "$PROJECT_DIR/poc/spam_attack.py"       attacker/root/poc/spam_attack.py
+incus file push "$PROJECT_DIR/poc/drug_spam_attack.py"  attacker/root/poc/drug_spam_attack.py
 echo "[+] attacker container ready — PoC scripts at /root/poc/*.py"
 
 # ── Print summary ────────────────────────────────────────────────────────────
