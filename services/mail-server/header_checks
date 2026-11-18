@@ -1,0 +1,8 @@
+# Postfix header_checks — discard high-score spam before delivery
+#
+# X-Spam-Level uses one asterisk per integer point of SpamAssassin score.
+# Alert-flood emails score ~4-5 (tagged only, still delivered).
+# Drug spam emails score ~14 (matched here, silently discarded).
+#
+# Match 8 or more asterisks = score >= 8 → DISCARD
+/^X-Spam-Level: \*{8}/     DISCARD spam score exceeds discard threshold

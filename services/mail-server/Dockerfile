@@ -9,6 +9,7 @@ RUN apt-get update && apt-get install -y \
 
 COPY main.cf /etc/postfix/main.cf
 COPY master.cf /etc/postfix/master.cf
+COPY header_checks /etc/postfix/header_checks
 COPY local.cf /etc/spamassassin/local.cf
 COPY start.sh /start.sh
 

@@ -25,5 +25,10 @@ content_filter =
 smtpd_client_message_rate_limit = 30
 anvil_rate_time_unit = 60s
 
+# Content-based spam filtering — DISCARD emails scoring >= 8 (8+ SpamAssassin stars)
+# Smart city alert emails score ~4-5 (tagged, still delivered)
+# Drug/pharmaceutical spam scores ~14 (discarded, never reaches mailbox)
+header_checks = regexp:/etc/postfix/header_checks
+
 # Logging
 maillog_file = /var/log/mail/mail.log

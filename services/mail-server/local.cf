@@ -1,11 +1,12 @@
 # SpamAssassin local configuration for Smart City demo
 
-# Lower threshold so alert-flood emails are reliably caught
 required_score 4.0
 report_safe 0
 rewrite_header Subject *****SPAM*****
+use_bayes 1
+bayes_auto_learn 1
 
-# Custom rules: match our PoC email patterns
+# ── Smart City alert-flood rules (score ~4-5 → tagged but delivered) ───────
 header SMARTCITY_URGENT     Subject =~ /URGENT.*CRITICAL/i
 score  SMARTCITY_URGENT     3.0
 
@@ -15,5 +16,15 @@ score  SMARTCITY_EVACUATE   2.0
 header SMARTCITY_CAPS       Subject =~ /^\[URGENT\]/
 score  SMARTCITY_CAPS       1.5
 
-# Standard rules already in SpamAssassin also fire on these emails:
-# SUBJ_ALL_CAPS, MISSING_DATE, MISSING_MID — no extra config needed
+# ── Drug / pharmaceutical spam rules (score ~14 → DISCARDED by Postfix) ───
+# Combined with SpamAssassin built-ins (DRUG_ED_CAPS +1.0, SUBJ_BUY +1.5,
+# SUBJECT_DRUG_GAP_C +1.0, DRUGS_ERECTILE +2.2) these push drug emails to 14+.
+
+body   SC_DRUG_ERECTILE    /\b(viagra|cialis|levitra|sildenafil|tadalafil)\b/i
+score  SC_DRUG_ERECTILE    4.0
+
+body   SC_DRUG_CHEAP_PILLS /\b(cheap\s+pills?|buy\s+pills?|free\s+pills?|generic\s+pills?)\b/i
+score  SC_DRUG_CHEAP_PILLS 3.0
+
+header SC_SUBJ_BUY_CHEAP   Subject =~ /BUY\s+CHEAP/i
+score  SC_SUBJ_BUY_CHEAP   2.0
