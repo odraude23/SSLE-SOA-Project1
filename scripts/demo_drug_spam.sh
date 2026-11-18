@@ -8,7 +8,7 @@
 set -euo pipefail
 
 SC_IP="$(incus list smartcity-services --format csv -c 4 2>/dev/null \
-    | head -1 | cut -d/ -f1)"
+    | grep eth0 | grep -oP '[\d.]+' | head -1)"
 if [ -z "$SC_IP" ]; then
     echo "[!] Could not detect smartcity-services IP"
     exit 1
@@ -23,7 +23,7 @@ echo "=================================================="
 echo " Target mail server : $TARGET"
 echo " Emails to send     : $COUNT"
 echo ""
-echo " Grafana: no new panel for this sub-attack."
+echo " Grafana: Threat 3 — Drug Spam row (Drug Spam Blocked, Received vs Discarded, Emails Delivered)"
 echo " Verify via: cat logs/mail/mail.log | grep discard"
 echo " Mailbox:    ls mailbox/ (should stay empty)"
 echo "=================================================="
