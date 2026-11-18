@@ -46,7 +46,7 @@ wazuh_rule_hits_total = Counter(
     ["rule_id", "zone"], registry=registry
 )
 
-_KNOWN_RULES = ["100001", "100002", "100200", "100201", "100301"]
+_KNOWN_RULES = ["100001", "100002", "100202", "100203", "100200", "100201", "100301"]
 _KNOWN_ZONES = ["unknown", "north", "center", "south"]
 
 def _preinit_counters():

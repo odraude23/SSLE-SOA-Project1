@@ -11,6 +11,7 @@ from typing import Optional
 
 import requests
 from fastapi import FastAPI, Request, HTTPException
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from prometheus_fastapi_instrumentator import Instrumentator
 from prometheus_client import Gauge
@@ -265,3 +266,9 @@ async def status(request: Request):
 @app.get("/health")
 async def health():
     return {"status": "ok", "zone": ZONE}
+
+
+@app.exception_handler(404)
+async def not_found_handler(request: Request, exc: HTTPException):
+    log_access(request, "not_found", "path not registered")
+    return JSONResponse(status_code=404, content={"detail": "Not Found"})

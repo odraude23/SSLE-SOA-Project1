@@ -1420,7 +1420,7 @@
     {
       "id": 37,
       "type": "row",
-      "title": "Threat 2 \u2014 APT / Honeypot",
+      "title": "Threat 2 \u2014 APT / Recon + Honeypot",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -1437,7 +1437,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 63
+        "y": 71
       },
       "fieldConfig": {
         "defaults": {
@@ -1501,7 +1501,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 71
+        "y": 79
       },
       "collapsed": false
     },
@@ -1513,7 +1513,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 72
+        "y": 80
       },
       "fieldConfig": {
         "defaults": {
@@ -1582,7 +1582,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 80
+        "y": 88
       }
     },
     {
@@ -1593,7 +1593,7 @@
         "h": 4,
         "w": 4,
         "x": 0,
-        "y": 81
+        "y": 89
       },
       "options": {
         "reduceOptions": {
@@ -1650,7 +1650,7 @@
         "h": 8,
         "w": 16,
         "x": 4,
-        "y": 81
+        "y": 89
       },
       "options": {
         "tooltip": {
@@ -1739,7 +1739,7 @@
         "h": 4,
         "w": 4,
         "x": 20,
-        "y": 81
+        "y": 89
       },
       "options": {
         "reduceOptions": {
@@ -1796,7 +1796,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 89
+        "y": 97
       },
       "collapsed": false
     },
@@ -1808,7 +1808,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 90
+        "y": 98
       },
       "fieldConfig": {
         "defaults": {},
@@ -1877,7 +1877,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 99
+        "y": 107
       },
       "collapsed": false
     },
@@ -1889,7 +1889,7 @@
         "h": 3,
         "w": 4,
         "x": 0,
-        "y": 100
+        "y": 108
       },
       "fieldConfig": {
         "defaults": {
@@ -1957,7 +1957,7 @@
         "h": 3,
         "w": 4,
         "x": 4,
-        "y": 100
+        "y": 108
       },
       "fieldConfig": {
         "defaults": {
@@ -2025,7 +2025,7 @@
         "h": 3,
         "w": 4,
         "x": 8,
-        "y": 100
+        "y": 108
       },
       "fieldConfig": {
         "defaults": {
@@ -2093,7 +2093,7 @@
         "h": 3,
         "w": 4,
         "x": 12,
-        "y": 100
+        "y": 108
       },
       "fieldConfig": {
         "defaults": {
@@ -2161,7 +2161,7 @@
         "h": 3,
         "w": 4,
         "x": 16,
-        "y": 100
+        "y": 108
       },
       "fieldConfig": {
         "defaults": {
@@ -2229,7 +2229,7 @@
         "h": 3,
         "w": 4,
         "x": 20,
-        "y": 100
+        "y": 108
       },
       "fieldConfig": {
         "defaults": {
@@ -2297,7 +2297,7 @@
         "h": 3,
         "w": 6,
         "x": 0,
-        "y": 103
+        "y": 111
       },
       "fieldConfig": {
         "defaults": {
@@ -2365,7 +2365,7 @@
         "h": 3,
         "w": 6,
         "x": 6,
-        "y": 103
+        "y": 111
       },
       "fieldConfig": {
         "defaults": {
@@ -2433,7 +2433,7 @@
         "h": 3,
         "w": 6,
         "x": 12,
-        "y": 103
+        "y": 111
       },
       "fieldConfig": {
         "defaults": {
@@ -2501,7 +2501,7 @@
         "h": 3,
         "w": 6,
         "x": 18,
-        "y": 103
+        "y": 111
       },
       "fieldConfig": {
         "defaults": {
@@ -2570,7 +2570,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 106
+        "y": 114
       }
     },
     {
@@ -2581,7 +2581,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 107
+        "y": 115
       },
       "fieldConfig": {
         "defaults": {},
@@ -2691,7 +2691,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 107
+        "y": 115
       },
       "fieldConfig": {
         "defaults": {},
@@ -2775,6 +2775,204 @@
           }
         }
       ]
+    },
+    {
+      "id": 74,
+      "type": "stat",
+      "title": "Recon Detected",
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 0,
+        "y": 63
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "background",
+        "graphMode": "none"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
+            ]
+          },
+          "mappings": []
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus-uid"
+          },
+          "expr": "sum(wazuh_rule_hits_total{rule_id=\"100203\"})",
+          "legendFormat": "enumeration alert",
+          "refId": "A"
+        }
+      ],
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus-uid"
+      }
+    },
+    {
+      "id": 75,
+      "type": "stat",
+      "title": "Probe Attempts",
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 0,
+        "y": 67
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "background",
+        "graphMode": "none"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 1
+              }
+            ]
+          },
+          "mappings": []
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus-uid"
+          },
+          "expr": "sum(wazuh_rule_hits_total{rule_id=\"100202\"})",
+          "legendFormat": "404 probes",
+          "refId": "A"
+        }
+      ],
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus-uid"
+      }
+    },
+    {
+      "id": 76,
+      "type": "timeseries",
+      "title": "Attack Chain: Recon \u2192 Honeypot",
+      "gridPos": {
+        "h": 8,
+        "w": 20,
+        "x": 4,
+        "y": 63
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": {
+            "lineInterpolation": "stepAfter"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Recon probes (100202)"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "orange"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Honeypot hits (100200)"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "red"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        },
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus-uid"
+          },
+          "expr": "sum(increase(wazuh_rule_hits_total{rule_id=\"100202\"}[5m]))",
+          "legendFormat": "Recon probes (100202)",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus-uid"
+          },
+          "expr": "sum(increase(wazuh_rule_hits_total{rule_id=\"100200\"}[5m]))",
+          "legendFormat": "Honeypot hits (100200)",
+          "refId": "B"
+        }
+      ],
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus-uid"
+      }
     }
   ]
 }
