@@ -1574,6 +1574,221 @@
       ]
     },
     {
+      "id": 70,
+      "type": "row",
+      "title": "Threat 3 \u2014 Drug Spam / Content Filter",
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 80
+      }
+    },
+    {
+      "id": 71,
+      "type": "stat",
+      "title": "Drug Spam Blocked",
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 0,
+        "y": 81
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "background",
+        "graphMode": "none"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
+            ]
+          },
+          "mappings": []
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "postfix_spam_discarded_total",
+          "legendFormat": "discarded",
+          "refId": "A"
+        }
+      ],
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      }
+    },
+    {
+      "id": 72,
+      "type": "timeseries",
+      "title": "Mail: Received vs Discarded / 5 min",
+      "gridPos": {
+        "h": 8,
+        "w": 16,
+        "x": 4,
+        "y": 81
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        },
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "spanNulls": true
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Received"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "orange"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Discarded"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "red"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "increase(postfix_messages_received_total[5m])",
+          "legendFormat": "Received",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "increase(postfix_spam_discarded_total[5m])",
+          "legendFormat": "Discarded",
+          "refId": "B"
+        }
+      ],
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      }
+    },
+    {
+      "id": 73,
+      "type": "stat",
+      "title": "Emails Delivered",
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 20,
+        "y": 81
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "background",
+        "graphMode": "none"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "yellow",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 1
+              }
+            ]
+          },
+          "mappings": []
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "postfix_messages_delivered_total",
+          "legendFormat": "delivered",
+          "refId": "A"
+        }
+      ],
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      }
+    },
+    {
       "id": 41,
       "type": "row",
       "title": "Wazuh Alerts \u2014 All Rules",
@@ -1581,7 +1796,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 80
+        "y": 89
       },
       "collapsed": false
     },
@@ -1593,7 +1808,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 81
+        "y": 90
       },
       "fieldConfig": {
         "defaults": {},
@@ -1662,7 +1877,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 90
+        "y": 99
       },
       "collapsed": false
     },
@@ -1674,7 +1889,7 @@
         "h": 3,
         "w": 4,
         "x": 0,
-        "y": 91
+        "y": 100
       },
       "fieldConfig": {
         "defaults": {
@@ -1742,7 +1957,7 @@
         "h": 3,
         "w": 4,
         "x": 4,
-        "y": 91
+        "y": 100
       },
       "fieldConfig": {
         "defaults": {
@@ -1810,7 +2025,7 @@
         "h": 3,
         "w": 4,
         "x": 8,
-        "y": 91
+        "y": 100
       },
       "fieldConfig": {
         "defaults": {
@@ -1878,7 +2093,7 @@
         "h": 3,
         "w": 4,
         "x": 12,
-        "y": 91
+        "y": 100
       },
       "fieldConfig": {
         "defaults": {
@@ -1946,7 +2161,7 @@
         "h": 3,
         "w": 4,
         "x": 16,
-        "y": 91
+        "y": 100
       },
       "fieldConfig": {
         "defaults": {
@@ -2014,7 +2229,7 @@
         "h": 3,
         "w": 4,
         "x": 20,
-        "y": 91
+        "y": 100
       },
       "fieldConfig": {
         "defaults": {
@@ -2082,7 +2297,7 @@
         "h": 3,
         "w": 6,
         "x": 0,
-        "y": 94
+        "y": 103
       },
       "fieldConfig": {
         "defaults": {
@@ -2150,7 +2365,7 @@
         "h": 3,
         "w": 6,
         "x": 6,
-        "y": 94
+        "y": 103
       },
       "fieldConfig": {
         "defaults": {
@@ -2218,7 +2433,7 @@
         "h": 3,
         "w": 6,
         "x": 12,
-        "y": 94
+        "y": 103
       },
       "fieldConfig": {
         "defaults": {
@@ -2286,7 +2501,7 @@
         "h": 3,
         "w": 6,
         "x": 18,
-        "y": 94
+        "y": 103
       },
       "fieldConfig": {
         "defaults": {
@@ -2355,7 +2570,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 97
+        "y": 106
       }
     },
     {
@@ -2366,7 +2581,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 98
+        "y": 107
       },
       "fieldConfig": {
         "defaults": {},
@@ -2476,7 +2691,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 98
+        "y": 107
       },
       "fieldConfig": {
         "defaults": {},

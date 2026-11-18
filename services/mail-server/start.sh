@@ -5,6 +5,9 @@ mkdir -p /var/log/mail /var/mail/smartcity.local /var/run/spamd
 touch /var/log/mail/mail.log
 chown spamd:spamd /var/run/spamd 2>/dev/null || true
 
+# Start Prometheus mail metrics exporter
+python3 /mail_exporter.py >> /var/log/mail/exporter.log 2>&1 &
+
 # Start SpamAssassin daemon
 spamd --daemonize \
       --pidfile=/var/run/spamd/spamd.pid \
