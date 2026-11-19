@@ -111,7 +111,7 @@ def main():
     print(f"[+] Attack complete: {sent}/{args.count} accepted by SMTP")
     print(f"[+] Check mailbox: none should appear (all discarded by SpamAssassin)")
     print(f"[+] Postfix log: look for 'discard: header X-Spam-Level'")
-    print(f"[+] Verify: cat /var/log/mail/mail.log | grep discard")
+    print(f"[+] Verify: incus exec smartcity-services -- bash -c 'docker exec mail-server grep -i discard /var/log/mail/mail.log'")
 
 
 if __name__ == "__main__":
