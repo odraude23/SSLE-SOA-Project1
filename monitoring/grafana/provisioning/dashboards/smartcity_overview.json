@@ -926,7 +926,7 @@
     {
       "id": 23,
       "type": "timeseries",
-      "title": "New Alerts (per Rule)",
+      "title": "New Alerts / 5 min (per rule)",
       "gridPos": {
         "h": 8,
         "w": 12,
@@ -962,7 +962,7 @@
     {
       "id": 24,
       "type": "timeseries",
-      "title": "New Alerts (per Zone)",
+      "title": "New Alerts / 5 min (per zone)",
       "gridPos": {
         "h": 8,
         "w": 12,
@@ -1282,7 +1282,7 @@
     {
       "id": 36,
       "type": "timeseries",
-      "title": "Ops Portal — Request Rate (threshold: 50 req/s)",
+      "title": "Ops Portal — Request Rate / 2min  (threshold: 50 req/s)",
       "gridPos": {
         "h": 8,
         "w": 24,
@@ -1563,7 +1563,7 @@
     {
       "id": 72,
       "type": "timeseries",
-      "title": "Mail: Received vs Discarded",
+      "title": "Mail: Received vs Discarded / 5 min",
       "gridPos": {
         "h": 8,
         "w": 16,
