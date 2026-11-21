@@ -699,7 +699,7 @@
     {
       "id": 16,
       "type": "timeseries",
-      "title": "Security Event Rate \u2014 all threats",
+      "title": "HTTP Request Rate \u2014 all services",
       "gridPos": {
         "h": 8,
         "w": 24,
@@ -729,8 +729,8 @@
             "type": "prometheus",
             "uid": "prometheus-uid"
           },
-          "expr": "rate(wazuh_alerts_total[30s])",
-          "legendFormat": "rule {{rule_id}}"
+          "expr": "sum(irate(http_requests_total[1m])) by (job)",
+          "legendFormat": "{{job}}"
         }
       ]
     },
@@ -1330,7 +1330,7 @@
             "type": "prometheus",
             "uid": "prometheus-uid"
           },
-          "expr": "rate(wazuh_alerts_total{rule_id=\"100001\"}[30s])",
+          "expr": "sum(rate(wazuh_rule_hits_total{rule_id=\"100001\"}[30s]))",
           "legendFormat": "flood events/s"
         }
       ]
