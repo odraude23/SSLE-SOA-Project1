@@ -232,9 +232,10 @@ incus start attacker 2>/dev/null || true
 incus exec attacker -- bash -c "apt-get update -q && apt-get install -y -q python3 wget"
 incus exec attacker -- bash -c "
     wget -qO /usr/local/bin/hey \
-        https://hey-release.s3.us-east-2.amazonaws.com/hey_linux_amd64 && \
-    chmod +x /usr/local/bin/hey && \
-    echo '[+] hey installed'
+        https://hey-release.s3.us-east-2.amazonaws.com/hey_linux_amd64 \
+    && chmod +x /usr/local/bin/hey \
+    && echo '[+] hey installed' \
+    || echo '[!] hey download failed — install manually later'
 "
 incus exec attacker -- mkdir -p /root/poc
 incus file push "$PROJECT_DIR/poc/ddos_attack.py"       attacker/root/poc/ddos_attack.py
