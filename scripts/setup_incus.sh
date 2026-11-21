@@ -229,14 +229,18 @@ if ! incus info attacker &>/dev/null; then
     sleep 3
 fi
 incus start attacker 2>/dev/null || true
-incus exec attacker -- bash -c "apt-get update -q && apt-get install -y -q python3 wget"
-incus exec attacker -- bash -c "
-    wget -qO /usr/local/bin/hey \
-        https://hey-release.s3.us-east-2.amazonaws.com/hey_linux_amd64 \
-    && chmod +x /usr/local/bin/hey \
-    && echo '[+] hey installed' \
-    || echo '[!] hey download failed — install manually later'
-"
+incus exec attacker -- bash -c "apt-get update -q && apt-get install -y -q python3"
+# Build hey from source on the VM host (no prebuilt binary available for latest release)
+# and push the compiled binary into the attacker container.
+if ! command -v hey &>/dev/null; then
+    echo "[*] Installing Go and building hey on VM host..."
+    sudo apt-get install -y -q golang-go
+    go install github.com/rakyll/hey@latest
+fi
+HEY_BIN="$(go env GOPATH)/bin/hey"
+incus file push "$HEY_BIN" attacker/usr/local/bin/hey
+incus exec attacker -- chmod +x /usr/local/bin/hey
+echo "[+] hey installed in attacker container"
 incus exec attacker -- mkdir -p /root/poc
 incus file push "$PROJECT_DIR/poc/ddos_attack.py"       attacker/root/poc/ddos_attack.py
 incus file push "$PROJECT_DIR/poc/apt_attack.py"        attacker/root/poc/apt_attack.py
