@@ -229,7 +229,7 @@ if ! incus info attacker &>/dev/null; then
     sleep 3
 fi
 incus start attacker 2>/dev/null || true
-incus exec attacker -- bash -c "which python3 || apt-get install -y python3 -q"
+incus exec attacker -- bash -c "apt-get update -q && apt-get install -y -q python3 wget"
 incus exec attacker -- bash -c "
     wget -qO /usr/local/bin/hey \
         https://hey-release.s3.us-east-2.amazonaws.com/hey_linux_amd64 && \
