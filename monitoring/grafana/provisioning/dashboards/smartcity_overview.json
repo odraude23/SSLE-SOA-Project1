@@ -1,7 +1,7 @@
 {
-  "title": "Smart City — Monitoring & Security",
+  "title": "Smart City \u2014 Monitoring & Security",
   "uid": "smartcity-overview",
-  "description": "Environmental monitoring + threat detection — sensor data, service health, Wazuh alerts",
+  "description": "Environmental monitoring + threat detection \u2014 sensor data, service health, Wazuh alerts",
   "schemaVersion": 39,
   "version": 1,
   "refresh": "10s",
@@ -29,7 +29,7 @@
     {
       "id": 2,
       "type": "stat",
-      "title": "AQI — North",
+      "title": "AQI \u2014 North",
       "gridPos": {
         "h": 4,
         "w": 8,
@@ -93,7 +93,7 @@
     {
       "id": 3,
       "type": "stat",
-      "title": "AQI — Center",
+      "title": "AQI \u2014 Center",
       "gridPos": {
         "h": 4,
         "w": 8,
@@ -157,7 +157,7 @@
     {
       "id": 4,
       "type": "stat",
-      "title": "AQI — South",
+      "title": "AQI \u2014 South",
       "gridPos": {
         "h": 4,
         "w": 8,
@@ -233,7 +233,7 @@
     {
       "id": 6,
       "type": "stat",
-      "title": "Temperature °C — North",
+      "title": "Temperature \u00b0C \u2014 North",
       "gridPos": {
         "h": 4,
         "w": 4,
@@ -294,7 +294,7 @@
     {
       "id": 7,
       "type": "stat",
-      "title": "Temperature °C — Center",
+      "title": "Temperature \u00b0C \u2014 Center",
       "gridPos": {
         "h": 4,
         "w": 4,
@@ -355,7 +355,7 @@
     {
       "id": 8,
       "type": "stat",
-      "title": "Temperature °C — South",
+      "title": "Temperature \u00b0C \u2014 South",
       "gridPos": {
         "h": 4,
         "w": 4,
@@ -416,7 +416,7 @@
     {
       "id": 9,
       "type": "stat",
-      "title": "Noise dB — North",
+      "title": "Noise dB \u2014 North",
       "gridPos": {
         "h": 4,
         "w": 4,
@@ -477,7 +477,7 @@
     {
       "id": 10,
       "type": "stat",
-      "title": "Noise dB — Center",
+      "title": "Noise dB \u2014 Center",
       "gridPos": {
         "h": 4,
         "w": 4,
@@ -538,7 +538,7 @@
     {
       "id": 11,
       "type": "stat",
-      "title": "Noise dB — South",
+      "title": "Noise dB \u2014 South",
       "gridPos": {
         "h": 4,
         "w": 4,
@@ -611,7 +611,7 @@
     {
       "id": 13,
       "type": "timeseries",
-      "title": "AQI over time — all zones",
+      "title": "AQI over time \u2014 all zones",
       "gridPos": {
         "h": 8,
         "w": 12,
@@ -649,7 +649,7 @@
     {
       "id": 14,
       "type": "timeseries",
-      "title": "Temperature over time — all zones",
+      "title": "Temperature over time \u2014 all zones",
       "gridPos": {
         "h": 8,
         "w": 12,
@@ -699,7 +699,7 @@
     {
       "id": 16,
       "type": "timeseries",
-      "title": "HTTP Request Rate — all services",
+      "title": "HTTP Request Rate \u2014 all services",
       "gridPos": {
         "h": 8,
         "w": 24,
@@ -1010,7 +1010,7 @@
     {
       "id": 31,
       "type": "stat",
-      "title": "DDoS Alerts",
+      "title": "DoS Alerts",
       "gridPos": {
         "h": 4,
         "w": 6,
@@ -1071,7 +1071,7 @@
           },
           "expr": "sum(wazuh_alerts_total{rule_id=~\"10000[12]\"}) or vector(0)",
           "instant": true,
-          "legendFormat": "DDoS"
+          "legendFormat": "DoS"
         }
       ]
     },
@@ -1270,7 +1270,7 @@
     {
       "id": 35,
       "type": "row",
-      "title": "Threat 1 — DDoS Detection",
+      "title": "Threat 1 \u2014 DoS Detection",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -1282,7 +1282,7 @@
     {
       "id": 36,
       "type": "timeseries",
-      "title": "Ops Portal — Request Rate / 2min  (threshold: 50 req/s)",
+      "title": "Ops Portal \u2014 Request Rate / 2min  (threshold: 50 req/s)",
       "gridPos": {
         "h": 8,
         "w": 24,
@@ -1338,7 +1338,7 @@
     {
       "id": 37,
       "type": "row",
-      "title": "Threat 2 — APT / Recon + Honeypot",
+      "title": "Threat 2 \u2014 APT / Recon + Honeypot",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -1350,7 +1350,7 @@
     {
       "id": 38,
       "type": "timeseries",
-      "title": "Honeypot Hits — /api/admin/* (rule 100200/100201)",
+      "title": "Honeypot Hits \u2014 /api/admin/* (rule 100200/100201)",
       "gridPos": {
         "h": 8,
         "w": 24,
@@ -1414,7 +1414,7 @@
     {
       "id": 39,
       "type": "row",
-      "title": "Threat 3 — Email Spam / Alert Flood",
+      "title": "Threat 3 \u2014 Email Spam / Alert Flood",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -1494,7 +1494,7 @@
     {
       "id": 70,
       "type": "row",
-      "title": "Threat 3 — Drug Spam / Content Filter",
+      "title": "Threat 3 \u2014 Drug Spam / Content Filter",
       "collapsed": false,
       "gridPos": {
         "h": 1,
@@ -1709,12 +1709,12 @@
     {
       "id": 41,
       "type": "row",
-      "title": "Wazuh Alerts — All Rules",
+      "title": "Wazuh Alerts \u2014 All Rules",
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 97
+        "y": 106
       },
       "collapsed": false
     },
@@ -1726,7 +1726,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 98
+        "y": 107
       },
       "fieldConfig": {
         "defaults": {},
@@ -1795,7 +1795,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 107
+        "y": 116
       },
       "collapsed": false
     },
@@ -1807,7 +1807,7 @@
         "h": 3,
         "w": 4,
         "x": 0,
-        "y": 108
+        "y": 117
       },
       "fieldConfig": {
         "defaults": {
@@ -1875,7 +1875,7 @@
         "h": 3,
         "w": 4,
         "x": 4,
-        "y": 108
+        "y": 117
       },
       "fieldConfig": {
         "defaults": {
@@ -1943,7 +1943,7 @@
         "h": 3,
         "w": 4,
         "x": 8,
-        "y": 108
+        "y": 117
       },
       "fieldConfig": {
         "defaults": {
@@ -2011,7 +2011,7 @@
         "h": 3,
         "w": 4,
         "x": 12,
-        "y": 108
+        "y": 117
       },
       "fieldConfig": {
         "defaults": {
@@ -2079,7 +2079,7 @@
         "h": 3,
         "w": 4,
         "x": 16,
-        "y": 108
+        "y": 117
       },
       "fieldConfig": {
         "defaults": {
@@ -2147,7 +2147,7 @@
         "h": 3,
         "w": 4,
         "x": 20,
-        "y": 108
+        "y": 117
       },
       "fieldConfig": {
         "defaults": {
@@ -2215,7 +2215,7 @@
         "h": 3,
         "w": 6,
         "x": 0,
-        "y": 111
+        "y": 120
       },
       "fieldConfig": {
         "defaults": {
@@ -2283,7 +2283,7 @@
         "h": 3,
         "w": 6,
         "x": 6,
-        "y": 111
+        "y": 120
       },
       "fieldConfig": {
         "defaults": {
@@ -2351,7 +2351,7 @@
         "h": 3,
         "w": 6,
         "x": 12,
-        "y": 111
+        "y": 120
       },
       "fieldConfig": {
         "defaults": {
@@ -2419,7 +2419,7 @@
         "h": 3,
         "w": 6,
         "x": 18,
-        "y": 111
+        "y": 120
       },
       "fieldConfig": {
         "defaults": {
@@ -2488,7 +2488,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 114
+        "y": 123
       }
     },
     {
@@ -2499,7 +2499,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 115
+        "y": 124
       },
       "fieldConfig": {
         "defaults": {},
@@ -2609,7 +2609,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 115
+        "y": 124
       },
       "fieldConfig": {
         "defaults": {},
@@ -2811,7 +2811,7 @@
     {
       "id": 76,
       "type": "timeseries",
-      "title": "Attack Chain: Recon → Honeypot",
+      "title": "Attack Chain: Recon \u2192 Honeypot",
       "gridPos": {
         "h": 8,
         "w": 20,
@@ -2885,6 +2885,209 @@
           "expr": "sum(increase(wazuh_rule_hits_total{rule_id=\"100200\"}[5m]))",
           "legendFormat": "Honeypot hits (100200)",
           "refId": "B"
+        }
+      ],
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus-uid"
+      }
+    },
+    {
+      "id": 90,
+      "type": "row",
+      "title": "Threat 4 \u2014 Botnet DDoS",
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 97
+      }
+    },
+    {
+      "id": 91,
+      "type": "stat",
+      "title": "Botnet Confirmed",
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 0,
+        "y": 98
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "background",
+        "graphMode": "none"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
+            ]
+          },
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "0",
+                  "color": "green"
+                }
+              }
+            }
+          ]
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus-uid"
+          },
+          "expr": "sum(wazuh_alerts_total{rule_id=\"100003\"}) or vector(0)",
+          "instant": true,
+          "legendFormat": "Botnet DDoS",
+          "refId": "A"
+        }
+      ],
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus-uid"
+      }
+    },
+    {
+      "id": 92,
+      "type": "stat",
+      "title": "Distinct Bot IPs",
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 0,
+        "y": 102
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "background",
+        "graphMode": "none"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 3
+              }
+            ]
+          },
+          "mappings": []
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus-uid"
+          },
+          "expr": "count(count by (client_ip) (wazuh_alerts_total{rule_id=\"100002\"})) or vector(0)",
+          "instant": true,
+          "legendFormat": "Bot IPs",
+          "refId": "A"
+        }
+      ],
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus-uid"
+      }
+    },
+    {
+      "id": 93,
+      "type": "timeseries",
+      "title": "Bot Flood \u2014 DoS Alerts per Source IP",
+      "gridPos": {
+        "h": 8,
+        "w": 20,
+        "x": 4,
+        "y": 98
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": {
+            "lineInterpolation": "smooth"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        },
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "thresholds": {
+          "mode": "off",
+          "show": false
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus-uid"
+          },
+          "expr": "rate(wazuh_alerts_total{rule_id=\"100002\"}[1m])",
+          "legendFormat": "{{client_ip}}",
+          "refId": "A"
         }
       ],
       "datasource": {

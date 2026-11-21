@@ -127,7 +127,7 @@ additions = '''
   <localfile><log_format>json</log_format><location>/var/log/smartcity/zone-aggregator-center/access.log</location></localfile>
   <localfile><log_format>json</log_format><location>/var/log/smartcity/zone-aggregator-south/access.log</location></localfile>
   <localfile><log_format>syslog</log_format><location>/var/log/smartcity/mail/mail.log</location></localfile>
-  <!-- Active response: block IPs triggering DDoS/APT/spam rules -->
+  <!-- Active response: block IPs triggering DoS/DDoS/APT/spam rules -->
   <command><name>block-threat</name><executable>block-threat.sh</executable><timeout_allowed>yes</timeout_allowed></command>
   <active-response><command>block-threat</command><location>server</location><rules_id>100002,100101,100201,100301,100303</rules_id><timeout>300</timeout></active-response>
 '''
@@ -230,12 +230,19 @@ if ! incus info attacker &>/dev/null; then
 fi
 incus start attacker 2>/dev/null || true
 incus exec attacker -- bash -c "which python3 || apt-get install -y python3 -q"
+incus exec attacker -- bash -c "
+    wget -qO /usr/local/bin/hey \
+        https://hey-release.s3.us-east-2.amazonaws.com/hey_linux_amd64 && \
+    chmod +x /usr/local/bin/hey && \
+    echo '[+] hey installed'
+"
 incus exec attacker -- mkdir -p /root/poc
 incus file push "$PROJECT_DIR/poc/ddos_attack.py"       attacker/root/poc/ddos_attack.py
 incus file push "$PROJECT_DIR/poc/apt_attack.py"        attacker/root/poc/apt_attack.py
 incus file push "$PROJECT_DIR/poc/spam_attack.py"       attacker/root/poc/spam_attack.py
 incus file push "$PROJECT_DIR/poc/drug_spam_attack.py"  attacker/root/poc/drug_spam_attack.py
-echo "[+] attacker container ready — PoC scripts at /root/poc/*.py"
+incus file push "$PROJECT_DIR/poc/botnet_attack.py"     attacker/root/poc/botnet_attack.py
+echo "[+] attacker container ready — PoC scripts at /root/poc/"
 
 # ── Print summary ────────────────────────────────────────────────────────────
 echo ""

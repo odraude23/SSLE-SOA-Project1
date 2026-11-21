@@ -2,19 +2,19 @@ groups:
   - name: smartcity_alerts
     rules:
 
-      # Threat 1: DDoS detection on ops-portal
-      - alert: PotentialDDoS
+      # Threat 1: DoS detection on ops-portal
+      - alert: PotentialDoS
         expr: |
           sum(rate(http_requests_total{job="ops-portal"}[10s])) > 50
         for: 10s
         labels:
           severity: critical
-          threat: ddos
+          threat: dos
         annotations:
-          summary: "Potential DDoS on ops-portal"
+          summary: "Potential DoS on ops-portal"
           description: "Request rate {{ $value | humanize }}/s exceeds 50/s threshold"
 
-      # High latency (DDoS impact)
+      # High latency (DoS/DDoS impact)
       - alert: HighRequestLatency
         expr: |
           histogram_quantile(0.95,

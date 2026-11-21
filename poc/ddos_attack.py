@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Threat 1 PoC: DDoS attack against the ops-portal web dashboard.
+Threat 1 PoC: DoS attack against the ops-portal web dashboard.
 Sends a flood of HTTP GET requests from multiple threads to overwhelm the service.
 
 Run from the Debian VM — the script auto-detects the smartcity-services Incus IP.
@@ -35,7 +35,7 @@ def _incus_ip(container="smartcity-services"):
 _ip = _incus_ip()
 _default_target = f"http://{_ip}:5600" if _ip else "http://localhost:5600"
 
-parser = argparse.ArgumentParser(description="DDoS PoC — ops-portal flood")
+parser = argparse.ArgumentParser(description="DoS PoC — ops-portal flood")
 parser.add_argument("--target", default=_default_target, help="Target URL")
 parser.add_argument("--threads", type=int, default=20, help="Number of threads")
 parser.add_argument("--duration", type=int, default=60, help="Attack duration (seconds)")
@@ -69,7 +69,7 @@ def print_stats():
         print(f"[{datetime.now().strftime('%H:%M:%S')}] Sent={requests_sent} Errors={errors} Rate={rate:.1f}/s")
 
 
-print(f"[*] DDoS PoC — target: {args.target}")
+print(f"[*] DoS PoC — target: {args.target}")
 print(f"[*] {args.threads} threads for {args.duration}s")
 print(f"[*] Detection: Wazuh rule 100002 (50+ req/10s from same IP)")
 
@@ -83,4 +83,4 @@ stop_event.set()
 
 print(f"\n[+] Attack finished. Sent={requests_sent} Errors={errors}")
 print(f"[+] Prometheus: rate(http_requests_total{{job='ops-portal'}}[10s])")
-print(f"[+] Wazuh:      rule 100002 — DDoS detected")
+print(f"[+] Wazuh:      rule 100002 — DoS detected")
