@@ -2,6 +2,9 @@
 set -e
 
 mkdir -p /var/log/mail /var/mail/smartcity.local /var/run/spamd
+chmod 777 /var/mail/smartcity.local
+touch /var/mail/smartcity.local/operator
+chmod 666 /var/mail/smartcity.local/operator
 touch /var/log/mail/mail.log
 chown spamd:spamd /var/run/spamd 2>/dev/null || true
 
