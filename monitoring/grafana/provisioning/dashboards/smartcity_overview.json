@@ -1069,7 +1069,7 @@
             "type": "prometheus",
             "uid": "prometheus-uid"
           },
-          "expr": "sum(wazuh_alerts_total{rule_id=~\"10000[12]\"}) or vector(0)",
+          "expr": "sum(wazuh_alerts_total{rule_id=\"100002\"}) or vector(0)",
           "instant": true,
           "legendFormat": "DoS"
         }
@@ -2907,7 +2907,7 @@
     {
       "id": 91,
       "type": "stat",
-      "title": "Botnet Confirmed",
+      "title": "Botnet Patterns Detected",
       "gridPos": {
         "h": 4,
         "w": 4,
@@ -3037,7 +3037,7 @@
     {
       "id": 93,
       "type": "timeseries",
-      "title": "Bot Flood \u2014 Threshold Breaches per Source IP",
+      "title": "Bot Flood \u2014 Threshold Breaches per Source IP (50 req/10s)",
       "gridPos": {
         "h": 8,
         "w": 20,
