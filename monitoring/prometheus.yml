@@ -32,6 +32,7 @@ scrape_configs:
       - targets: ["alert-service:5500"]
 
   - job_name: "ops-portal"
+    scrape_interval: 5s
     static_configs:
       - targets: ["ops-portal:5600"]
 
@@ -48,6 +49,7 @@ scrape_configs:
       - targets: ["zone-aggregator-south:5102"]
 
   - job_name: "wazuh-exporter"
+    scrape_interval: 5s
     static_configs:
       - targets: ["wazuh-exporter:9100"]
 
