@@ -1330,7 +1330,7 @@
             "type": "prometheus",
             "uid": "prometheus-uid"
           },
-          "expr": "irate(http_requests_total{job=\"ops-portal\"}[2m])",
+          "expr": "sum(irate(http_requests_total{job=\"ops-portal\"}[2m]))",
           "legendFormat": "ops-portal req/s"
         }
       ]
@@ -2811,7 +2811,7 @@
     {
       "id": 76,
       "type": "timeseries",
-      "title": "Attack Chain: Recon \u2192 Honeypot",
+      "title": "Attack Chain: Recon / Honeypot",
       "gridPos": {
         "h": 8,
         "w": 20,
