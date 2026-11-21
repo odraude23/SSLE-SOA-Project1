@@ -3037,7 +3037,7 @@
     {
       "id": 93,
       "type": "timeseries",
-      "title": "Bot Flood \u2014 DoS Alerts per Source IP",
+      "title": "Bot Flood \u2014 Cumulative DoS Alerts per Source IP",
       "gridPos": {
         "h": 8,
         "w": 20,
@@ -3085,7 +3085,7 @@
             "type": "prometheus",
             "uid": "prometheus-uid"
           },
-          "expr": "rate(wazuh_alerts_total{rule_id=\"100002\"}[1m])",
+          "expr": "wazuh_alerts_total{rule_id=\"100002\"}",
           "legendFormat": "{{client_ip}}",
           "refId": "A"
         }
