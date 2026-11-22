@@ -1,0 +1,96 @@
+\documentclass[tikz,border=14pt]{standalone}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta}
+
+\begin{document}
+\begin{tikzpicture}[
+  box/.style={draw=black!50, fill=white, rounded corners=5pt,
+              minimum width=3.2cm, minimum height=0.9cm,
+              align=center, font=\small},
+  B/.style={-Stealth, blue!65, thick},
+  R/.style={-Stealth, red!55, thick, dashed},
+  G/.style={-Stealth, green!55!black, thick},
+  A/.style={-Stealth, red!75, very thick},
+  O/.style={-Stealth, orange!65, thick},
+  lbl/.style={font=\scriptsize, fill=white, inner sep=1pt},
+]
+
+%% ── Top row (aligned at y = 0) ────────────────────────────────────────
+\node[box] (sensors)  at ( 0,   0) {IoT Sensors};
+\node[box] (zones)    at ( 5,   0)
+  {Zone Aggregators\\[-2pt]\scriptsize North · Centre · South};
+\node[box] (ops)      at (10.5, 0)
+  {Ops Portal\\[-2pt]\scriptsize DoS / DDoS Target};
+\node[box] (attacker) at (15.5, 0) {Attacker};
+
+%% ── Left column (data flow, x = 5, 1.5 cm spacing) ───────────────────
+\node[box] (ingestion) at (5, -1.5) {Ingestion Service};
+\node[box] (storage)   at (5, -3.0) {Storage Service (SQLite)};
+\node[box] (analytics) at (5, -4.5) {Analytics Service};
+\node[box] (alert)     at (5, -6.0) {Alert Service};
+\node[box] (mail)      at (5, -7.5)
+  {Mail Server\\[-2pt]\scriptsize Postfix + SpamAssassin};
+
+%% ── Right column (security, x = 10.5, 1.5 cm spacing) ────────────────
+\node[box] (wazuh)   at (10.5, -1.5)
+  {Wazuh SIEM\\[-2pt]\scriptsize 13 custom rules};
+\node[box] (prom)    at (10.5, -3.0) {Prometheus};
+\node[box] (grafana) at (10.5, -4.5) {Grafana};
+\node[box] (blocker) at (10.5, -6.0)
+  {threat-blocker\\[-2pt]\scriptsize iptables DROP};
+
+%% ── Data flow (blue) ──────────────────────────────────────────────────
+\draw[B] (sensors)   -- (zones)
+         node[midway, above, lbl]{sensor data};
+\draw[B] (zones)     -- (ingestion)
+         node[midway, right, lbl]{batch / 10 s};
+\draw[B] (ingestion) -- (storage);
+\draw[B] (storage)   -- (analytics);
+\draw[B] (analytics) -- (alert);
+\draw[B] (alert)     -- (mail)
+         node[midway, right, lbl]{email};
+
+%% ── Attack paths (thick red) ──────────────────────────────────────────
+\draw[A] (attacker.west) -- node[midway, above, lbl, text=red!75]{DoS / DDoS} (ops.east);
+\draw[A] (attacker.north) -- ++(0,0.8) --
+         node[midway, above, lbl, text=red!75]{APT / Spam}
+         ([yshift=0.8cm]zones.north) -- (zones.north);
+\draw[A] (attacker.south) -- (attacker.south |- mail.east) --
+         node[midway, below, lbl, text=red!75]{Drug Spam} (mail.east);
+
+%% ── Log flow to Wazuh (red dashed) ───────────────────────────────────
+%% Single clean horizontal arrow (Ingestion and Wazuh share y = -2)
+\draw[R] (ingestion.east) -- (wazuh.west)
+         node[midway, above, lbl, text=red!55]{logs};
+
+%% ── Monitoring chain (green) ──────────────────────────────────────────
+\draw[G] (wazuh)   -- (prom)
+         node[midway, right, lbl]{metrics};
+\draw[G] (prom)    -- (grafana)
+         node[midway, right, lbl]{query};
+
+%% ── Active response (orange) ──────────────────────────────────────────
+\draw[O] (wazuh.east) -- ++(1.5,0) -- ++(0,-4.5) -- (blocker.east)
+         node[pos=0.5, right, lbl, text=orange!65]{block IP};
+
+%% ── Legend (left column, below IoT Sensors) ──────────────────────────
+\node[draw=black!30, fill=white, rounded corners=3pt,
+      inner sep=8pt, font=\small, anchor=north west]
+     at (-1.6, -2.0) {%
+  \begin{tabular}{@{}l@{\hspace{8pt}}l}
+    \multicolumn{2}{@{}l}{\textbf{Legend}}\\[5pt]
+    \tikz[baseline=-0.5ex]{\draw[-Stealth,blue!65,thick](0,0)--(0.7cm,0);}
+      & Data Flow \\[6pt]
+    \tikz[baseline=-0.5ex]{\draw[-Stealth,red!55,thick,dashed](0,0)--(0.7cm,0);}
+      & Log Flow \\[6pt]
+    \tikz[baseline=-0.5ex]{\draw[-Stealth,green!55!black,thick](0,0)--(0.7cm,0);}
+      & Monitoring \\[6pt]
+    \tikz[baseline=-0.5ex]{\draw[-Stealth,orange!65,thick](0,0)--(0.7cm,0);}
+      & Active Response \\[6pt]
+    \tikz[baseline=-0.5ex]{\draw[-Stealth,red!75,very thick](0,0)--(0.7cm,0);}
+      & Attack Path \\
+  \end{tabular}%
+};
+
+\end{tikzpicture}
+\end{document}

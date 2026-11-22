@@ -1,0 +1,64 @@
+\section{HTTP Flood (DoS)}
+\label{sec:threat-dos}
+
+The ops portal is the only service with an unauthenticated public interface and
+serves as the operational dashboard for city personnel. A high-rate HTTP flood
+against it exhausts its processing capacity, preventing operators from monitoring
+sensor readings and responding to environmental alerts. The attack is simulated
+using \texttt{hey}, an HTTP load generator, configured with 50 concurrent workers
+sustaining requests for 60 seconds, orchestrated by \texttt{scripts/demo\_dos.sh}.
+
+\subsection{Detection}
+
+Detection is implemented as a two-stage Wazuh rule chain on the ops-portal
+access logs. Rule 100001 fires on every request to the root or data endpoint
+(\texttt{/} or \texttt{/api/data}), producing a low-level marker event. Rule
+100002 is a frequency rule that fires when 50 or more such markers arrive from
+the same source IP within a 10-second window, confirming an active flood.
+
+\begin{lstlisting}[style=xmlstyle, caption={Wazuh rules for HTTP flood detection.}]
+<rule id="100001" level="3">
+  <if_sid>86600</if_sid>
+  <field name="path">^/$|^/api/data$</field>
+  <description>High frequency access to ops-portal
+    endpoint</description>
+  <group>dos,</group>
+</rule>
+
+<rule id="100002" level="12" frequency="50" timeframe="10">
+  <if_matched_sid>100001</if_matched_sid>
+  <same_field>client_ip</same_field>
+  <description>DoS detected: 50+ requests in 10s
+    from same IP on ops-portal</description>
+  <group>dos,attack,</group>
+  <options>alert_by_email</options>
+</rule>
+\end{lstlisting}
+
+The 50-request threshold was chosen to exceed realistic legitimate browsing
+behaviour while remaining sensitive enough to detect a flood within its first
+10-second window. The \texttt{same\_field} constraint ensures that rule 100002
+counts only events from a single source IP, so traffic from multiple distinct
+users does not accumulate into a false positive.
+
+\subsection{Response}
+
+Rule 100002 triggers the active response chain described in
+Section~\ref{sec:monitoring}. The source IP is blocked at the
+\texttt{DOCKER-USER} iptables chain within approximately 5 seconds of the
+threshold being crossed. The block is automatically lifted after 300 seconds,
+after which the attacker's requests are accepted again unless a new flood
+triggers another block.
+
+\subsection{Evaluation}
+
+The detection mechanism functions correctly end-to-end. In testing, rule 100002
+fires within the first 10-second window of a sustained flood, and the IP block
+is applied before the second window begins. The Grafana \emph{DoS Alerts} stat
+panel (rule 100002 counter) increments within seconds of the attack starting.
+
+The principal limitation is that the threshold is calibrated for the simulated
+load: a slow flood sustaining just below 50 requests per 10 seconds would not
+trigger rule 100002. Additionally, single-IP blocking provides no defence
+against a distributed attack where each source IP individually remains below
+the threshold. That scenario is addressed separately in Section~\ref{sec:botnet}.

@@ -1,0 +1,76 @@
+\section{Alert Email Flooding}
+\label{sec:threat-spam}
+
+The alert service sends an email whenever a sensor reading exceeds a configured
+threshold. A sustained flood of fabricated sensor payloads can exhaust the alert
+channel, fill operator mailboxes, and cause genuine critical events to go unnoticed.
+An attacker in possession of the
+\texttt{INTERNAL\_TOKEN} (obtained in the APT phase described in
+Section~\ref{sec:threat-apt}) can submit fabricated sensor payloads that
+continuously exceed all thresholds, forcing the alert service to generate email
+at the maximum rate allowed by the application. The attack is demonstrated by
+\texttt{scripts/demo\_spam.sh}, which requires the token extracted by the
+APT demo to be present.
+
+\subsection{Detection}
+
+Detection is implemented with two Wazuh rules on the alert-service access logs.
+Rule 100300 fires on each \texttt{email\_sent} event, producing a marker per
+outbound alert. Rule 100301 fires when 10 or more such markers accumulate within
+60 seconds, confirming an abnormal burst rate.
+
+\begin{lstlisting}[style=xmlstyle, caption={Wazuh rules for alert email flood detection.}]
+<rule id="100300" level="10">
+  <if_sid>86600</if_sid>
+  <field name="event_type">email_sent</field>
+  <description>Alert email sent from
+    alert-service</description>
+  <group>spam,email,</group>
+</rule>
+
+<rule id="100301" level="14" frequency="10" timeframe="60">
+  <if_matched_sid>100300</if_matched_sid>
+  <description>Email flood: 10+ alert emails in
+    60 seconds</description>
+  <group>spam,attack,flood,</group>
+  <options>alert_by_email</options>
+</rule>
+\end{lstlisting}
+
+Unlike the DoS and APT rules, rule 100301 uses no \texttt{same\_field} or
+\texttt{different\_field} constraint, because all alert emails originate from
+the alert service itself, not from an external IP. The flood is an application-level
+pattern (volume over time) rather than a per-source-IP pattern.
+
+\subsection{Response}
+
+Two independent mechanisms bound the flood, operating at different layers.
+
+At the application layer, a circuit breaker in the alert service stops email
+delivery after 12 consecutive alerts and enforces a 5-minute cooldown before
+resuming. This limits the total number of emails delivered in any single flood
+to approximately 12 before the channel is closed.
+
+At the transport layer, Postfix enforces a hard rate limit of 30 messages per
+minute, regardless of application-layer state. This provides an independent
+backstop that prevents transport saturation even if the circuit breaker is
+bypassed or misconfigured.
+
+Rule 100301 does not trigger an IP block. The alert service is a legitimate
+internal component. Blocking its IP would suppress all future alerting. The rule
+provides observability and email notification at level 14, ensuring operators are
+aware of the flood even as the circuit breaker is engaged.
+
+\subsection{Evaluation}
+
+Both response mechanisms function correctly. In testing, the circuit breaker
+engages after 12 emails and the 5-minute cooldown prevents any further delivery.
+The Grafana \emph{Spam Alerts} stat (rule 100301 counter) and \emph{Alert Emails
+Sent} timeseries confirm the burst pattern and its cutoff.
+
+The primary limitation is that legitimate alert bursts (arising from a real
+multi-zone environmental incident) are indistinguishable from an application-layer
+flood by rate alone. A threshold of 10 emails per 60 seconds may generate false
+positives during genuine disaster scenarios. Additionally, the circuit breaker
+threshold (12 emails) is a fixed configuration. Appropriate values depend on the
+operational context and would require tuning in a production deployment.

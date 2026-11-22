@@ -1,0 +1,102 @@
+\documentclass[conference]{IEEEtran}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+
+% Code listing styles
+\definecolor{codebg}{RGB}{248,249,250}
+\definecolor{codekw}{RGB}{0,100,180}
+\definecolor{codestring}{RGB}{180,0,0}
+\definecolor{codecomment}{RGB}{100,120,100}
+
+\lstdefinestyle{xmlstyle}{
+  backgroundcolor=\color{codebg},
+  basicstyle=\ttfamily\footnotesize,
+  keywordstyle=\color{codekw}\bfseries,
+  stringstyle=\color{codestring},
+  commentstyle=\color{codecomment}\itshape,
+  breakatwhitespace=false,
+  breaklines=true,
+  captionpos=b,
+  keepspaces=true,
+  showstringspaces=false,
+  frame=single,
+  rulecolor=\color{gray!40},
+  xleftmargin=0.5em,
+  xrightmargin=0.5em,
+  language=XML
+}
+
+\lstdefinestyle{pythonstyle}{
+  backgroundcolor=\color{codebg},
+  basicstyle=\ttfamily\footnotesize,
+  keywordstyle=\color{codekw}\bfseries,
+  stringstyle=\color{codestring},
+  commentstyle=\color{codecomment}\itshape,
+  breaklines=true,
+  frame=single,
+  rulecolor=\color{gray!40},
+  xleftmargin=0.5em,
+  language=Python
+}
+
+\lstdefinestyle{bashstyle}{
+  backgroundcolor=\color{codebg},
+  basicstyle=\ttfamily\footnotesize,
+  breaklines=true,
+  frame=single,
+  rulecolor=\color{gray!40},
+  xleftmargin=0.5em
+}
+
+% ─────────────────────────────────────────────────────────────
+\begin{document}
+
+\title{Threat Detection, Monitoring and Prevention\\in a Smart City Service-Oriented Architecture}
+
+\author{%
+  \IEEEauthorblockN{Eduardo Lopes}
+  \IEEEauthorblockA{%
+    Security in Large-Scale Systems\\
+    Master's in Cybersecurity - DETI, University of Aveiro\\
+    \today
+  }
+}
+
+\maketitle
+
+\begin{abstract}
+A security monitoring and active-response platform was designed for a Smart City
+Environmental Monitoring system built as a Service-Oriented Architecture across three
+geographic zones. Four threat classes are addressed: HTTP flooding, distributed botnet
+DDoS, a two-stage Advanced Persistent Threat via endpoint reconnaissance and honeypot
+credential capture, and two email spam variants targeting the alert channel and the
+SMTP transport layer. Detection relies on thirteen custom Wazuh rules. Automated
+response is enacted through a threat-blocker service that applies \texttt{iptables}
+DROP rules in the Docker bridge chain. Prometheus and Grafana provide real-time
+observability across all threat classes. Seven attack surfaces are identified, of which
+four are actively defended and three are documented as residual risks.
+\end{abstract}
+
+\input{chapters/1_Introduction}
+\input{chapters/2_StateOfTheArt}
+\input{chapters/3_SystemArchitecture}
+\input{chapters/4_MonitoringSIEM}
+\input{chapters/5_Threat_DDoS}
+\input{chapters/6_Threat_APT}
+\input{chapters/7_Threat_Spam}
+\input{chapters/8_Threat_DrugSpam}
+\input{chapters/9_Threat_Botnet}
+\input{chapters/10_Evaluation}
+\input{chapters/11_Conclusion}
+
+\end{document}

@@ -1,0 +1,56 @@
+\section{State of the Art}
+\label{sec:stateoftheart}
+
+\subsection{Service-Oriented Architectures and Security}
+
+The decomposition of monolithic applications into microservices
+increases operational flexibility but multiplies the attack surface: each service endpoint
+becomes a potential entry point, inter-service calls transit a shared network that may be
+partially compromised, and credentials or tokens that authenticate service-to-service
+communication must be protected across many processes and containers.
+
+\subsection{Monitoring Tools}
+
+Prometheus is an open-source, pull-based metrics platform originally developed
+at SoundCloud. Its time-series data model and flexible PromQL query
+language make it well-suited to microservice observability. Grafana
+provides dashboarding over Prometheus and other data sources. Commercial alternatives
+such as Datadog and Zabbix offer similar functionality but introduce cost and vendor
+dependency. Open-source tooling is preferred in this project to maintain transparency
+over the detection pipeline.
+
+\subsection{SIEM and Intrusion Detection}
+
+Wazuh is an open-source SIEM derived from OSSEC. It ingests
+log files, applies pattern-matching and frequency rules, and can trigger active responses
+(shell scripts) on rule matches. It is the platform adopted in this project for
+consistency with the course practicals. Commercial platforms such as Splunk provide
+richer analytics but hide the underlying rule machinery. Falco targets
+Kubernetes-specific syscall monitoring and does not apply to the Incus/Docker
+deployment used here.
+
+\subsection{DDoS Attacks and Mitigation}
+
+DDoS attacks aim to exhaust the resources of a target service, rendering it unavailable
+to legitimate users. Rate-based detection (triggering when a
+source IP exceeds a request threshold within a time window) is a standard first-line
+defence. Its limitation is that distributed floods (many source IPs) evade single-IP
+thresholds, a limitation acknowledged in the evaluation.
+
+\subsection{Advanced Persistent Threats}
+
+APTs are characterised by stealth, persistence, and multi-stage execution.
+The reconnaissance phase (endpoint enumeration, banner grabbing) precedes exploitation.
+Honeypot-based detection (placing intentionally exposed
+"decoy" endpoints that log all access) is a lightweight technique that generates high-fidelity
+alerts: any access to a honeypot endpoint is inherently anomalous.
+
+\subsection{Spam and Content Filtering}
+
+Email spam remains a persistent threat vector, particularly in alert-driven operational
+environments where operators are conditioned to act on incoming alerts. SpamAssassin applies a scoring model that combines header analysis, content
+rules, and Bayesian classification. Its extensible rule system allows custom scoring for
+domain-specific content (e.g., pharmaceutical keywords in a city monitoring context).
+Application-layer alert flooding (using legitimate credentials to trigger high volumes of
+internal alerts) is a distinct attack class that content filters cannot address alone and
+requires circuit-breaker or rate-limiting logic at the application level.

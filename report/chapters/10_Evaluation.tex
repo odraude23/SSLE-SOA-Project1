@@ -1,0 +1,117 @@
+\section{Evaluation}
+\label{sec:evaluation}
+
+\subsection{Experimental Setup}
+
+All experiments are conducted on the single-VM deployment described in
+Section~\ref{sec:architecture}. Each threat demo is executed in isolation after
+a full reset: Wazuh OpenSearch indices are wiped, Docker volumes are cleared, and
+all log files are deleted. This guarantees that counter values and rule hit counts
+reflect a single clean run. The attacker container is a separate Incus instance
+with its own IP, so blocking it does not affect access to Grafana or Prometheus
+from the host.
+
+Each demo script follows a three-phase structure: a warm-up period to seed
+Prometheus counters, the attack phase, and a post-attack observation window.
+Grafana panels are read at the end of each run to confirm detection and response.
+
+\subsection{Threshold Analysis}
+
+The detection thresholds were chosen for the simulated environment and require
+evaluation against realistic operational assumptions.
+
+\begin{itemize}[leftmargin=*]
+  \item \textbf{DoS - 50 requests per 10 seconds:} this is achievable by a
+        browser with parallel resource loading, so it is on the aggressive side
+        for a production portal. In deployment, the threshold should be calibrated
+        against baseline traffic measurements from the specific operator population.
+  \item \textbf{APT recon - 5 unknown paths in 30 seconds:} realistic for
+        deliberate enumeration scripts. A slow scanner probing one endpoint per
+        minute would not trigger rule 100203 and could enumerate indefinitely
+        without detection.
+  \item \textbf{APT honeypot - 3 hits in 5 minutes:} permissive. A single
+        accidental access to a honeypot endpoint already constitutes an anomaly
+        of note. A threshold of 2 or even 1 hit would reduce the window for
+        credential extraction.
+  \item \textbf{Alert flood - 10 emails per 60 seconds:} the platform has 3 zones
+        with 3 sensor types each (AQI, temperature, noise), yielding up to 9
+        simultaneous threshold crossings in a genuine multi-zone incident. A burst
+        of 9 legitimate alerts falls just below the threshold. A burst of 10
+        crosses it. This boundary is narrow and would require adjustment in a
+        deployment with more zones or sensor types.
+  \item \textbf{Postfix rate limit - 30 messages per minute:} never triggered
+        in the current demo setup and not realistic as a standalone limit. It
+        serves only as a failsafe and should be sized to the actual expected alert
+        volume.
+  \item \textbf{SpamAssassin threshold - 8 stars:} the margin between legitimate
+        emails (4-5) and drug spam (10-16) is comfortable in testing. The risk
+        is at the boundary: a legitimately composed alert with unusual keyword
+        combinations could approach 8, while a carefully obfuscated spam message
+        could score below it.
+\end{itemize}
+
+\subsection{Scalability}
+
+The zone aggregator design provides a structural bandwidth advantage: each
+aggregator batches readings from 3 sensors and forwards a single payload every
+10 seconds to the ingestion service. As the number of sensors per zone grows,
+the reduction in upstream traffic scales proportionally. For $K$ sensors per zone,
+the upstream message rate is $1/K$ of the per-sensor rate.
+
+The Wazuh deployment does not scale horizontally in the current implementation.
+A single agent monitors all log files, and all 13 rules are evaluated on one
+host. In a real Smart City deployment with tens of zones and distributed services,
+a Wazuh cluster with per-zone agents and a centralised manager would be required.
+The structured JSON log format and the \texttt{event\_type} field convention
+adopted throughout the platform are forward-compatible with this architecture.
+
+Prometheus scraping at 15-second intervals (5 seconds for the ops portal and Wazuh
+exporter) is adequate for the current service count. As the number of services
+grows, scrape duration would increase. A federated Prometheus setup or remote
+write to a time-series database would be needed to avoid staleness.
+
+\subsection{Limitations}
+
+\textbf{APT scope.} The implemented attack chain demonstrates reconnaissance and
+honeypot probing but does not proceed beyond credential capture. A complete APT
+lifecycle would include establishing a persistent backdoor or reverse shell, using
+the stolen token to exfiltrate data from all three zones, and pivoting to
+command-and-control infrastructure. These stages are not implemented. The demo
+stops at the point where the \texttt{INTERNAL\_TOKEN} is extracted.
+
+\textbf{Mail server trust model.} The Postfix relay currently accepts inbound mail
+from any external sender and outbound mail from any internal service. In production,
+the relay should be restricted to accept alert emails only from the alert service's
+internal IP. Without this restriction, any compromised internal container could
+send email through the relay, bypassing the circuit breaker entirely.
+
+\textbf{Single-IP blocking.} The active response blocks the attacking IP for 300
+seconds before automatically lifting the block. There is no persistent ban list; a
+patient attacker can resume after each cooldown. Additionally, single-IP blocking
+is ineffective against a large botnet where each bot sends traffic below the
+individual threshold, as noted in Section~\ref{sec:botnet}.
+
+\textbf{No TLS on inter-service communication.} Service-to-service calls use
+plain HTTP. The \texttt{x-internal-token} header is therefore transmitted in
+cleartext and could be intercepted on a compromised network segment. In a
+production environment, TLS with mutual certificate authentication would replace
+the shared-token scheme.
+
+\textbf{Active response conservatism.} IP blocking was chosen over more
+disruptive responses such as service termination or container isolation.
+More aggressive actions would cause downtime for legitimate users sharing
+the affected service and would destroy in-flight state and log entries that
+are valuable for post-incident forensic analysis. IP blocking preserves service
+availability for all other clients and keeps the full log record intact.
+
+\textbf{Rule threshold validation.} All detection thresholds were tuned against
+the simulated attack scripts only. No baseline traffic capture from legitimate
+operator behaviour was available to validate that the chosen thresholds do not
+produce false positives under realistic load. In a production deployment, a
+silent monitoring period with rules in log-only mode would be required before
+active response is enabled.
+
+\textbf{Single-host lab environment.} All containers run on one VM with
+essentially zero network latency. Detection latencies reported here are therefore
+lower than what would be observed in a genuinely distributed deployment where
+log shipping, network jitter, and rule evaluation would each add measurable delay.

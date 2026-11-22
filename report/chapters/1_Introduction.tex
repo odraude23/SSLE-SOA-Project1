@@ -1,0 +1,41 @@
+\section{Introduction}
+\label{sec:introduction}
+
+Modern cities increasingly deploy sensor-based platforms to monitor environmental
+conditions (air quality, temperature, noise levels) and feed real-time data to operators
+who must react to degraded conditions. As these platforms adopt Service-Oriented
+Architectures (SOA) built on microservices, they inherit the security challenges of distributed
+systems: an expanded attack surface, heterogeneous trust boundaries, and complex
+inter-service communication that must be secured without introducing prohibitive latency.
+
+This project presents the design, implementation, and evaluation of a threat detection
+and prevention system for a Smart City Environmental Monitoring Platform built as a SOA.
+
+\subsection{Scope}
+
+The system addresses four threat classes, with two sub-variants of the spam threat:
+
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{HTTP Flood (DoS):} volumetric single-source flood targeting the
+        operator portal, aiming to blind city personnel before or during a physical event.
+  \item \textbf{Advanced Persistent Threat (APT):} stealthy, multi-stage intrusion
+        combining reconnaissance and targeted exploitation to gain unauthorised access
+        to internal platform resources.
+  \item \textbf{Alert Flood:} abuse of legitimate platform functionality to generate
+        a high volume of automated notifications, degrading operator situational awareness.
+  \item \textbf{Drug Content Spam:} unsolicited email containing illicit pharmaceutical
+        content, targeting the platform's mail infrastructure as a delivery channel.
+  \item \textbf{Botnet DDoS:} distributed volumetric attack orchestrated across multiple
+        compromised nodes, overwhelming the target service through coordinated flooding.
+\end{enumerate}
+
+The APT and Alert Flood threats form a multi-stage attack chain: initial intrusion
+enables subsequent service abuse, mirroring the lateral movement and impact phases of
+real-world adversarial campaigns.
+
+The remainder of this report is organised as follows. Section 2 reviews the relevant
+state of the art. Section 3 describes the service architecture used. Section 4 presents the
+risk management and mitigation strategies. Sections 5 through 9 detail the detection
+and response approach for each threat class. Section 10 evaluates the overall solution
+and its scalability. Section 11 presents the demonstrations and Section 12 draws
+conclusions.

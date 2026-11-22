@@ -1,0 +1,67 @@
+\section{Botnet DDoS}
+\label{sec:botnet}
+
+The same ops portal targeted in
+Section~\ref{sec:threat-dos} is the attack target. The distributed scenario is
+simulated by cloning the attacker Incus container $N$ times, assigning each
+clone a distinct IP address from the Incus bridge, and launching all bots
+simultaneously. Each bot runs 20 concurrent threads for 90 seconds, easily
+sustaining more than 50 requests per 10 seconds individually. The scenario is
+demonstrated by \texttt{scripts/demo\_botnet.sh}, which accepts $N$ as an
+argument. In testing, $N=3$ bots were used.
+
+\subsection{Detection}
+
+Detection extends the two-rule chain from Section~\ref{sec:threat-dos} with a
+meta-rule that identifies the distributed pattern. Rule 100002 fires per bot,
+as in the single-source case. Rule 100003 is a frequency rule that fires when
+3 or more distinct source IPs each trigger rule 100002 within a 2-minute window.
+The \texttt{<different\_field>client\_ip</different\_field>} primitive ensures
+that the counter increments only when each triggering rule 100002 event came
+from a new source IP. A single fast attacker cannot accidentally trigger it.
+
+\begin{lstlisting}[style=xmlstyle, caption={Wazuh rule for botnet DDoS detection.}]
+<rule id="100003" level="15" frequency="3"
+      timeframe="120">
+  <if_matched_sid>100002</if_matched_sid>
+  <different_field>client_ip</different_field>
+  <description>Botnet DDoS: 3+ distinct source IPs
+    each exceeding flood threshold within
+    2 minutes</description>
+  <group>ddos,botnet,attack,</group>
+  <options>alert_by_email</options>
+</rule>
+\end{lstlisting}
+
+The 2-minute timeframe for rule 100003 is wider than the 10-second window of
+rule 100002 to account for staggered bot startup times and jitter in network
+delivery.
+
+\subsection{Response}
+
+Each bot's IP is blocked individually when rule 100002 fires for that source, via
+the active response chain described in Section~\ref{sec:monitoring}. Rule 100003
+does not trigger an additional block (the per-bot blocks from rule 100002
+already handle individual sources). Rule 100003 provides the distributed-attack
+signal: its level-15 alert notifies operators that a coordinated attack is in
+progress, as distinct from isolated single-source incidents.
+
+\subsection{Evaluation}
+
+In testing with 3 bots, rule 100002 fired for each bot within the first
+10-second window of their respective floods, and rule 100003 fired 12 times over
+the 90-second run as new combinations of three distinct IPs were detected. The
+Grafana \emph{Botnet Patterns Detected} stat panel (rule 100003 count) and
+\emph{Distinct Bot IPs} stat (count of distinct IPs triggering rule 100002)
+confirm the distributed pattern. The \emph{Bot Flood - Threshold Breaches per
+Source IP} timeseries displays one line per bot IP, with simultaneous spikes
+constituting the visual signature of a coordinated flood.
+
+The principal limitation is that rule 100003 requires each individual bot to
+exceed the 50-request-per-10-second threshold. A large botnet coordinating a
+slow distributed flood (where each bot sends just below 50 requests per 10
+seconds, but their aggregate rate is sufficient to degrade service) would not
+trigger rule 100002 per bot, and consequently rule 100003 would not fire.
+Detecting such a low-rate distributed pattern would require aggregate rate
+monitoring across all source IPs, which is not implemented in the current rule
+set.

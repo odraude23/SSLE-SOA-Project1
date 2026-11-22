@@ -1,0 +1,52 @@
+\section{Drug Content Spam}
+\label{sec:threat-drugspam}
+
+The mail server accepts inbound messages from any external sender, with no prior
+foothold required. Pharmaceutical spam delivered to operator mailboxes could
+distract personnel, degrade trust in the alert channel, or serve as a social
+engineering vector. The attack is simulated by \texttt{scripts/demo\_drug\_spam.sh}, which sends
+SMTP messages containing drug-related content directly to the mail server.
+
+\subsection{Detection}
+
+Detection is performed by SpamAssassin, a statistical content filter integrated
+into the Postfix mail pipeline. SpamAssassin assigns each message a score based
+on a weighted combination of header analysis, body keyword matching, and
+Bayesian classification. In testing, drug-content messages consistently receive
+scores between 10 and 16. Legitimate Smart City alert emails, which contain only
+sensor readings and threshold values, receive scores of 4 to 5.
+
+A threshold of 8 stars is configured as the discard boundary. Messages scoring
+at or above this value are silently discarded by Postfix via the \texttt{DISCARD}
+action. No bounce is sent to the sender, preventing the mail server from being
+used as a backscatter source.
+
+A custom Python exporter tails the
+Postfix mail log and increments the \texttt{postfix\_spam\_discarded\_total}
+counter on each discard event, exposing the metric to Prometheus.
+
+\subsection{Response}
+
+The response is enacted at the transport layer by the Postfix content filter
+pipeline. No Wazuh rule or active response is involved. The detection and
+discard are performed entirely within the mail delivery path, independent of
+the SIEM. This independence is intentional: the drug spam threat is a
+content-classification problem, not a behavioural pattern that requires
+log-based correlation.
+
+\subsection{Evaluation}
+
+In testing, all 10 drug-content messages sent during the demo were discarded.
+The operator inbox received 0 messages. Legitimate Smart City alert emails
+(score 4–5) were delivered normally, confirming that the threshold of 8 is set
+correctly to separate the two populations with no overlap in the test dataset.
+The Grafana \emph{Drug Spam Blocked} stat panel and \emph{Drug Spam Discarded}
+timeseries reflect the discard count in real time.
+
+The principal limitation is robustness to adversarial content crafting.
+SpamAssassin's keyword-based rules can be evaded by reducing drug-keyword density
+through obfuscation (substituting characters, breaking words across lines, or
+mixing languages). The current threshold is calibrated for straightforward
+pharmaceutical spam. Sophisticated adversarial messages with lower keyword
+density may score below 8 and be delivered. Periodic rule updates are required
+to maintain filter effectiveness over time.

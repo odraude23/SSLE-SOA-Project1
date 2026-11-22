@@ -25,9 +25,9 @@ AGGREGATION_INTERVAL = int(os.getenv("AGGREGATION_INTERVAL", "10"))
 NUM_SENSORS = int(os.getenv("NUM_SENSORS", "3"))
 
 ZONE_COORDS = {
-    "north":  {"lat": 40.65, "lon": -8.63, "description": "Northern district"},
-    "center": {"lat": 40.63, "lon": -8.65, "description": "Central district"},
-    "south":  {"lat": 40.61, "lon": -8.67, "description": "Southern district"},
+    "north":  {"lat": 40.671, "lon": -8.627, "description": "Northern district"},
+    "center": {"lat": 40.641, "lon": -8.654, "description": "Central district"},
+    "south":  {"lat": 40.610, "lon": -8.681, "description": "Southern district"},
 }
 
 LOG_DIR = f"/var/log/zone-aggregator-{ZONE}"

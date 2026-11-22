@@ -1,0 +1,26 @@
+\section{Conclusion}
+\label{sec:conclusion}
+
+A security monitoring and threat prevention platform was designed and implemented
+for a Smart City Environmental Monitoring system built as a Service-Oriented
+Architecture. Four threat classes are addressed: single-source HTTP flooding,
+distributed botnet DDoS, a two-stage Advanced Persistent Threat, and two
+independent email spam variants. Detection is achieved through thirteen custom
+Wazuh rules combining frequency-based and cross-source correlation primitives.
+Response is automated via a custom threat-blocker service that correctly handles
+Docker NAT rewriting. Prometheus and Grafana provide real-time observability
+across all threat classes, with pre-seeded counters eliminating cold-start blind
+spots.
+
+\subsection{Future Work}
+
+Several directions would strengthen the platform in a production context.
+The APT chain should be extended beyond credential capture to demonstrate
+persistence establishment, data exfiltration, and lateral movement to downstream
+services. The mail relay should be restricted to accept alert emails exclusively
+from the alert service's internal IP, closing the trust gap identified in the
+Evaluation. Inter-service communication should be upgraded from plain HTTP to
+TLS with mutual certificate authentication. Finally, detection thresholds should
+be calibrated against a baseline of real operator traffic before active response
+is enabled, using a log-only monitoring period to quantify false positive rates
+under legitimate load.
